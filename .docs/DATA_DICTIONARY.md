@@ -20,7 +20,7 @@ Covers the four core reference tables: `airports`, `airlines`, `aircraft`, `rout
 | Column     | Type      | Nullable | Key    | Description                                    |
 | ---------- | --------- | -------- | ------ | ----------------------------------------------- |
 | `icao`     | String(3) | No       | PK     | ICAO airline code, e.g. `BAW`.                  |
-| `iata`     | String(2) | Yes      | Unique | IATA airline code, e.g. `BA`.                   |
+| `iata`     | String(2) | Yes      | Indexed | IATA airline code, e.g. `BA`. Not unique — IATA permits "controlled duplicates," the same code assigned to more than one airline at once when there's no risk of confusion (e.g. separate regional markets). |
 | `name`     | String    | No       |        | Airline name, e.g. "British Airways".           |
 | `callsign` | String    | No       |        | Radio callsign, e.g. "SPEEDBIRD".                |
 | `country`  | String    | No       |        | Country the airline is based in.                 |

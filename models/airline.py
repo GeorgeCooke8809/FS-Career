@@ -13,7 +13,7 @@ class Airline(Base):
     __tablename__ = "airlines"
 
     icao: Mapped[str] = mapped_column(String(3), primary_key=True)
-    iata: Mapped[str | None] = mapped_column(String(2), unique=True, index=True)
+    iata: Mapped[str | None] = mapped_column(String(2), index=True)
     name: Mapped[str]
     callsign: Mapped[str]
     country: Mapped[str]
