@@ -12,5 +12,6 @@ dependencies = [
     "requests>=2.34.2",
     "simconnect>=0.4.26",
     "sqlalchemy>=2.0.51",
+    "timezonefinder>=8.2.5",
     "tkintermapview>=1.30",
 ]

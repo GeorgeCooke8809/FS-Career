@@ -24,6 +24,7 @@ Covers the core reference tables: `airports`, `airlines`, `aircraft_families`, `
 | `name`     | String    | No       |        | Airline name, e.g. "British Airways".           |
 | `callsign` | String    | No       |        | Radio callsign, e.g. "SPEEDBIRD".                |
 | `country`  | String    | No       |        | Country the airline is based in.                 |
+| `has_logo` | Boolean   | No       | Default `False` | Whether a logo file exists at `data/logos/{icao}.png`. Logos aren't stored in the DB (BLOB) to keep `fs_career.db` small — see design notes. |
 
 ## `aircraft_families`
 
@@ -59,6 +60,9 @@ The fact table — each row is one specific scheduled service: an airline flying
 | `distance_nm`            | Float     | No       |                                | Great-circle distance in nautical miles, stored (not computed on read).    |
 | `departure_time_utc`     | Time      | No       |                                | Scheduled departure time at `origin`, in UTC, rounded to the nearest 5 minutes at import time (not DB-enforced). |
 | `duration_minutes`       | Integer   | No       |                                | Scheduled flight duration in minutes, rounded to the nearest 5 minutes at import time (not DB-enforced). |
+| `flight_number_synthetic` | Boolean  | No       | Default `True`                | `True` if `flight_number` was generated rather than sourced from a real airline flight number. |
+| `schedule_synthetic`     | Boolean   | No       | Default `True`                | `True` if `departure_time_utc`/`duration_minutes` were generated rather than sourced from a real timetable. |
+| `aircraft_icao_type_synthetic` | Boolean | No  | Default `False`               | `True` if `aircraft_icao_type` was guessed from a generic/unmatched OpenFlights equipment code (e.g. `"737"` instead of `"738"`) rather than a real reported variant. |
 
 **Constraints:**
 - `UNIQUE(airline_icao, flight_number)`
@@ -83,3 +87,10 @@ The fact table — each row is one specific scheduled service: an airline flying
 - `airlines.prestige_tier` and `aircraft.seats` are deliberately omitted for now — deferred pending future dataset editing.
 - `aircraft_families` was added instead of putting `category`/`manufacturer` directly on `aircraft` because real-world type ratings are earned per family (e.g. one 737 rating covers all NG/MAX variants), not per exact variant — the type-rating system planned in the roadmap should key off `family_id`, not `icao_type`, once it's built.
 - The seed dataset (`data/seed/aircraft_seed.json`) is scoped to aircraft with real-world airline/business service *and* a plausible MSFS presence (default or addon) — see `memory/project_aircraft_import.md`.
+- `airports` is seeded from OurAirports, filtered to a valid 4-letter ICAO code (`icao_code` column, all letters) and excluding `heliport`/`balloonport`/`closed` types — see `memory/project_airports_import.md` for why this filter is a reasonable proxy for "servable by mainline/regional/business aviation" rather than a size cutoff. `timezone` isn't in the source data and is computed from lat/lon via `timezonefinder` at build time.
+- `airlines.has_logo`/`data/logos/`: logos are downloaded from Kiwi.com's public airline-logo CDN, keyed by IATA code, for the 325 airlines that have at least one route (route-less airlines — ~400 of them — are out of scope). 316/325 resolved; the remaining 9 are low-route (≤44) airlines with either no IATA code or no artwork on the CDN, and were left unresolved. See `data/seed/fetch_airline_logos.py` and `memory/project_airline_logos.md`.
+- `routes` is bulk-seeded from OpenFlights' route network data (real airline → route → aircraft-type triples), matched against our own `airlines`/`airports`/`aircraft` tables — airlines/airports we don't have are dropped, but unmatched/generic equipment codes (e.g. KLM's rows mostly saying `"330"`/`"737"` instead of a real variant code) fall back to a representative variant from our `aircraft` table rather than being dropped, flagged via `aircraft_icao_type_synthetic`. `flight_number`, `departure_time_utc`, and `duration_minutes` are always synthesized, since no free source has bulk real-world schedule data (that's commercial OAG/Cirium territory) — see `memory/project_routes_import.md` for the full process and coverage numbers.
+
+### Known gaps
+
+- **BA Euroflyer** (Gatwick-based BA short-haul subsidiary, ICAO `EFW`, callsign "EUROFLYER") is missing from `airlines` — it didn't come through the Wikipedia "List of airline codes" pull. BA CityFlyer (`CFE`) did get picked up correctly as its own row, so Euroflyer should follow the same pattern if added later. Adding it properly also means sourcing its own routes rather than leaving it route-less, which hasn't been done.

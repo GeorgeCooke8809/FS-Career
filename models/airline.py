@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
@@ -17,8 +17,14 @@ class Airline(Base):
     name: Mapped[str]
     callsign: Mapped[str]
     country: Mapped[str]
+    has_logo: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
 
     routes: Mapped[list["Route"]] = relationship(back_populates="airline")
 
     def __repr__(self) -> str:
         return f"<Airline {self.icao}>"
+
+    @property
+    def logo_path(self) -> str | None:
+        """Relative path to this airline's logo under data/logos/, if one exists."""
+        return f"data/logos/{self.icao}.png" if self.has_logo else None

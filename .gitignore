@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Regenerable raw source data (re-downloaded by build scripts)
+data/seed/raw/
