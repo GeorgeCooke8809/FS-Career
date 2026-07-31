@@ -4,6 +4,7 @@
 erDiagram
     AIRLINES ||--o{ ROUTES : "operates"
     AIRCRAFT ||--o{ ROUTES : "flies"
+    AIRCRAFT_FAMILIES ||--o{ AIRCRAFT : "groups"
     AIRPORTS ||--o{ ROUTES : "origin of"
     AIRPORTS ||--o{ ROUTES : "destination of"
 
@@ -26,10 +27,17 @@ erDiagram
         string country
     }
 
+    AIRCRAFT_FAMILIES {
+        int id PK
+        string name
+        string manufacturer
+        string category
+    }
+
     AIRCRAFT {
         string icao_type PK
         string name
-        string manufacturer
+        int family_id FK
     }
 
     ROUTES {

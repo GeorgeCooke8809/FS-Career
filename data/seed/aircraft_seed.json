@@ -1,0 +1,1141 @@
+{
+  "families": [
+    {
+      "name": "Airbus A220",
+      "manufacturer": "Airbus",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Airbus A300/A310",
+      "manufacturer": "Airbus",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Airbus A320 family",
+      "manufacturer": "Airbus",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Airbus A330",
+      "manufacturer": "Airbus",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Airbus A340",
+      "manufacturer": "Airbus",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Airbus A350",
+      "manufacturer": "Airbus",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Airbus A380",
+      "manufacturer": "Airbus",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 707",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 717",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 727",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 737",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 747",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 757",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 767",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 777",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Boeing 787",
+      "manufacturer": "Boeing",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "McDonnell Douglas DC-9",
+      "manufacturer": "McDonnell Douglas",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "McDonnell Douglas MD-80/90",
+      "manufacturer": "McDonnell Douglas",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "McDonnell Douglas DC-10/MD-11",
+      "manufacturer": "McDonnell Douglas",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Lockheed L-1011 TriStar",
+      "manufacturer": "Lockheed",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Concorde",
+      "manufacturer": "Aerospatiale/BAC",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "Embraer ERJ 135/140/145",
+      "manufacturer": "Embraer",
+      "category": "regional_jet"
+    },
+    {
+      "name": "Embraer E-Jets",
+      "manufacturer": "Embraer",
+      "category": "regional_jet"
+    },
+    {
+      "name": "Bombardier CRJ",
+      "manufacturer": "Bombardier/Canadair",
+      "category": "regional_jet"
+    },
+    {
+      "name": "BAe 146 / Avro RJ",
+      "manufacturer": "British Aerospace/Avro",
+      "category": "regional_jet"
+    },
+    {
+      "name": "Fokker F28/70/100",
+      "manufacturer": "Fokker",
+      "category": "regional_jet"
+    },
+    {
+      "name": "Sukhoi Superjet 100",
+      "manufacturer": "Sukhoi",
+      "category": "regional_jet"
+    },
+    {
+      "name": "Comac ARJ21",
+      "manufacturer": "Comac",
+      "category": "regional_jet"
+    },
+    {
+      "name": "Comac C919",
+      "manufacturer": "Comac",
+      "category": "mainline_jet"
+    },
+    {
+      "name": "ATR 42/72",
+      "manufacturer": "ATR",
+      "category": "turboprop"
+    },
+    {
+      "name": "De Havilland Canada Dash 8",
+      "manufacturer": "De Havilland Canada",
+      "category": "turboprop"
+    },
+    {
+      "name": "Fokker F27/50",
+      "manufacturer": "Fokker",
+      "category": "turboprop"
+    },
+    {
+      "name": "Saab 340/2000",
+      "manufacturer": "Saab",
+      "category": "turboprop"
+    },
+    {
+      "name": "Short 330/360",
+      "manufacturer": "Short Brothers",
+      "category": "turboprop"
+    },
+    {
+      "name": "Let L-410",
+      "manufacturer": "Let Kunovice",
+      "category": "turboprop"
+    },
+    {
+      "name": "Beechcraft 1900",
+      "manufacturer": "Beechcraft",
+      "category": "turboprop"
+    },
+    {
+      "name": "Embraer EMB-120 Brasilia",
+      "manufacturer": "Embraer",
+      "category": "turboprop"
+    },
+    {
+      "name": "King Air",
+      "manufacturer": "Beechcraft",
+      "category": "business"
+    },
+    {
+      "name": "TBM",
+      "manufacturer": "Daher",
+      "category": "business"
+    },
+    {
+      "name": "Cessna Citation",
+      "manufacturer": "Cessna",
+      "category": "business"
+    },
+    {
+      "name": "Embraer Phenom/Legacy/Praetor",
+      "manufacturer": "Embraer",
+      "category": "business"
+    },
+    {
+      "name": "Bombardier Challenger/Global",
+      "manufacturer": "Bombardier",
+      "category": "business"
+    },
+    {
+      "name": "Gulfstream",
+      "manufacturer": "Gulfstream Aerospace",
+      "category": "business"
+    },
+    {
+      "name": "Dassault Falcon",
+      "manufacturer": "Dassault",
+      "category": "business"
+    },
+    {
+      "name": "Learjet",
+      "manufacturer": "Learjet/Bombardier",
+      "category": "business"
+    },
+    {
+      "name": "Pilatus",
+      "manufacturer": "Pilatus",
+      "category": "business"
+    },
+    {
+      "name": "Cirrus Vision Jet",
+      "manufacturer": "Cirrus",
+      "category": "business"
+    },
+    {
+      "name": "HondaJet",
+      "manufacturer": "Honda Aircraft",
+      "category": "business"
+    }
+  ],
+  "aircraft": [
+    {
+      "icao_type": "BCS1",
+      "name": "A220-100",
+      "family": "Airbus A220"
+    },
+    {
+      "icao_type": "BCS3",
+      "name": "A220-300",
+      "family": "Airbus A220"
+    },
+    {
+      "icao_type": "A30B",
+      "name": "A300B2/B4",
+      "family": "Airbus A300/A310"
+    },
+    {
+      "icao_type": "A306",
+      "name": "A300-600",
+      "family": "Airbus A300/A310"
+    },
+    {
+      "icao_type": "A310",
+      "name": "A310",
+      "family": "Airbus A300/A310"
+    },
+    {
+      "icao_type": "A318",
+      "name": "A318",
+      "family": "Airbus A320 family"
+    },
+    {
+      "icao_type": "A319",
+      "name": "A319",
+      "family": "Airbus A320 family"
+    },
+    {
+      "icao_type": "A320",
+      "name": "A320",
+      "family": "Airbus A320 family"
+    },
+    {
+      "icao_type": "A321",
+      "name": "A321",
+      "family": "Airbus A320 family"
+    },
+    {
+      "icao_type": "A19N",
+      "name": "A319neo",
+      "family": "Airbus A320 family"
+    },
+    {
+      "icao_type": "A20N",
+      "name": "A320neo",
+      "family": "Airbus A320 family"
+    },
+    {
+      "icao_type": "A21N",
+      "name": "A321neo",
+      "family": "Airbus A320 family"
+    },
+    {
+      "icao_type": "A332",
+      "name": "A330-200",
+      "family": "Airbus A330"
+    },
+    {
+      "icao_type": "A333",
+      "name": "A330-300",
+      "family": "Airbus A330"
+    },
+    {
+      "icao_type": "A338",
+      "name": "A330-800",
+      "family": "Airbus A330"
+    },
+    {
+      "icao_type": "A339",
+      "name": "A330-900",
+      "family": "Airbus A330"
+    },
+    {
+      "icao_type": "A342",
+      "name": "A340-200",
+      "family": "Airbus A340"
+    },
+    {
+      "icao_type": "A343",
+      "name": "A340-300",
+      "family": "Airbus A340"
+    },
+    {
+      "icao_type": "A345",
+      "name": "A340-500",
+      "family": "Airbus A340"
+    },
+    {
+      "icao_type": "A346",
+      "name": "A340-600",
+      "family": "Airbus A340"
+    },
+    {
+      "icao_type": "A359",
+      "name": "A350-900",
+      "family": "Airbus A350"
+    },
+    {
+      "icao_type": "A35K",
+      "name": "A350-1000",
+      "family": "Airbus A350"
+    },
+    {
+      "icao_type": "A388",
+      "name": "A380-800",
+      "family": "Airbus A380"
+    },
+    {
+      "icao_type": "B701",
+      "name": "707-100",
+      "family": "Boeing 707"
+    },
+    {
+      "icao_type": "B703",
+      "name": "707-300",
+      "family": "Boeing 707"
+    },
+    {
+      "icao_type": "B712",
+      "name": "717-200",
+      "family": "Boeing 717"
+    },
+    {
+      "icao_type": "B721",
+      "name": "727-100",
+      "family": "Boeing 727"
+    },
+    {
+      "icao_type": "B722",
+      "name": "727-200",
+      "family": "Boeing 727"
+    },
+    {
+      "icao_type": "B732",
+      "name": "737-200",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B733",
+      "name": "737-300",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B734",
+      "name": "737-400",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B735",
+      "name": "737-500",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B736",
+      "name": "737-600",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B737",
+      "name": "737-700",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B738",
+      "name": "737-800",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B739",
+      "name": "737-900",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B37M",
+      "name": "737 MAX 7",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B38M",
+      "name": "737 MAX 8",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B39M",
+      "name": "737 MAX 9",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B3XM",
+      "name": "737 MAX 10",
+      "family": "Boeing 737"
+    },
+    {
+      "icao_type": "B741",
+      "name": "747-100",
+      "family": "Boeing 747"
+    },
+    {
+      "icao_type": "B742",
+      "name": "747-200",
+      "family": "Boeing 747"
+    },
+    {
+      "icao_type": "B743",
+      "name": "747-300",
+      "family": "Boeing 747"
+    },
+    {
+      "icao_type": "B744",
+      "name": "747-400",
+      "family": "Boeing 747"
+    },
+    {
+      "icao_type": "B748",
+      "name": "747-8",
+      "family": "Boeing 747"
+    },
+    {
+      "icao_type": "B752",
+      "name": "757-200",
+      "family": "Boeing 757"
+    },
+    {
+      "icao_type": "B753",
+      "name": "757-300",
+      "family": "Boeing 757"
+    },
+    {
+      "icao_type": "B762",
+      "name": "767-200",
+      "family": "Boeing 767"
+    },
+    {
+      "icao_type": "B763",
+      "name": "767-300",
+      "family": "Boeing 767"
+    },
+    {
+      "icao_type": "B764",
+      "name": "767-400",
+      "family": "Boeing 767"
+    },
+    {
+      "icao_type": "B772",
+      "name": "777-200",
+      "family": "Boeing 777"
+    },
+    {
+      "icao_type": "B77L",
+      "name": "777-200LR",
+      "family": "Boeing 777"
+    },
+    {
+      "icao_type": "B773",
+      "name": "777-300",
+      "family": "Boeing 777"
+    },
+    {
+      "icao_type": "B77W",
+      "name": "777-300ER",
+      "family": "Boeing 777"
+    },
+    {
+      "icao_type": "B778",
+      "name": "777-8",
+      "family": "Boeing 777"
+    },
+    {
+      "icao_type": "B779",
+      "name": "777-9",
+      "family": "Boeing 777"
+    },
+    {
+      "icao_type": "B788",
+      "name": "787-8",
+      "family": "Boeing 787"
+    },
+    {
+      "icao_type": "B789",
+      "name": "787-9",
+      "family": "Boeing 787"
+    },
+    {
+      "icao_type": "B78X",
+      "name": "787-10",
+      "family": "Boeing 787"
+    },
+    {
+      "icao_type": "DC91",
+      "name": "DC-9-10",
+      "family": "McDonnell Douglas DC-9"
+    },
+    {
+      "icao_type": "DC92",
+      "name": "DC-9-20",
+      "family": "McDonnell Douglas DC-9"
+    },
+    {
+      "icao_type": "DC93",
+      "name": "DC-9-30",
+      "family": "McDonnell Douglas DC-9"
+    },
+    {
+      "icao_type": "DC94",
+      "name": "DC-9-40",
+      "family": "McDonnell Douglas DC-9"
+    },
+    {
+      "icao_type": "DC95",
+      "name": "DC-9-50",
+      "family": "McDonnell Douglas DC-9"
+    },
+    {
+      "icao_type": "MD81",
+      "name": "MD-81",
+      "family": "McDonnell Douglas MD-80/90"
+    },
+    {
+      "icao_type": "MD82",
+      "name": "MD-82",
+      "family": "McDonnell Douglas MD-80/90"
+    },
+    {
+      "icao_type": "MD83",
+      "name": "MD-83",
+      "family": "McDonnell Douglas MD-80/90"
+    },
+    {
+      "icao_type": "MD87",
+      "name": "MD-87",
+      "family": "McDonnell Douglas MD-80/90"
+    },
+    {
+      "icao_type": "MD88",
+      "name": "MD-88",
+      "family": "McDonnell Douglas MD-80/90"
+    },
+    {
+      "icao_type": "MD90",
+      "name": "MD-90",
+      "family": "McDonnell Douglas MD-80/90"
+    },
+    {
+      "icao_type": "DC10",
+      "name": "DC-10",
+      "family": "McDonnell Douglas DC-10/MD-11"
+    },
+    {
+      "icao_type": "MD11",
+      "name": "MD-11",
+      "family": "McDonnell Douglas DC-10/MD-11"
+    },
+    {
+      "icao_type": "L101",
+      "name": "L-1011 TriStar",
+      "family": "Lockheed L-1011 TriStar"
+    },
+    {
+      "icao_type": "CONC",
+      "name": "Concorde",
+      "family": "Concorde"
+    },
+    {
+      "icao_type": "E135",
+      "name": "ERJ-135",
+      "family": "Embraer ERJ 135/140/145"
+    },
+    {
+      "icao_type": "E145",
+      "name": "ERJ-145",
+      "family": "Embraer ERJ 135/140/145"
+    },
+    {
+      "icao_type": "E45X",
+      "name": "ERJ-145XR",
+      "family": "Embraer ERJ 135/140/145"
+    },
+    {
+      "icao_type": "E170",
+      "name": "E170",
+      "family": "Embraer E-Jets"
+    },
+    {
+      "icao_type": "E75L",
+      "name": "E175",
+      "family": "Embraer E-Jets"
+    },
+    {
+      "icao_type": "E190",
+      "name": "E190",
+      "family": "Embraer E-Jets"
+    },
+    {
+      "icao_type": "E195",
+      "name": "E195",
+      "family": "Embraer E-Jets"
+    },
+    {
+      "icao_type": "E290",
+      "name": "E190-E2",
+      "family": "Embraer E-Jets"
+    },
+    {
+      "icao_type": "E295",
+      "name": "E195-E2",
+      "family": "Embraer E-Jets"
+    },
+    {
+      "icao_type": "E275",
+      "name": "E175-E2",
+      "family": "Embraer E-Jets"
+    },
+    {
+      "icao_type": "CRJ1",
+      "name": "CRJ100",
+      "family": "Bombardier CRJ"
+    },
+    {
+      "icao_type": "CRJ2",
+      "name": "CRJ200",
+      "family": "Bombardier CRJ"
+    },
+    {
+      "icao_type": "CRJ7",
+      "name": "CRJ700",
+      "family": "Bombardier CRJ"
+    },
+    {
+      "icao_type": "CRJ9",
+      "name": "CRJ900",
+      "family": "Bombardier CRJ"
+    },
+    {
+      "icao_type": "CRJX",
+      "name": "CRJ1000",
+      "family": "Bombardier CRJ"
+    },
+    {
+      "icao_type": "B461",
+      "name": "BAe 146-100",
+      "family": "BAe 146 / Avro RJ"
+    },
+    {
+      "icao_type": "B462",
+      "name": "BAe 146-200",
+      "family": "BAe 146 / Avro RJ"
+    },
+    {
+      "icao_type": "B463",
+      "name": "BAe 146-300",
+      "family": "BAe 146 / Avro RJ"
+    },
+    {
+      "icao_type": "RJ70",
+      "name": "Avro RJ70",
+      "family": "BAe 146 / Avro RJ"
+    },
+    {
+      "icao_type": "RJ85",
+      "name": "Avro RJ85",
+      "family": "BAe 146 / Avro RJ"
+    },
+    {
+      "icao_type": "RJ1H",
+      "name": "Avro RJ100",
+      "family": "BAe 146 / Avro RJ"
+    },
+    {
+      "icao_type": "F28",
+      "name": "F28 Fellowship",
+      "family": "Fokker F28/70/100"
+    },
+    {
+      "icao_type": "F70",
+      "name": "Fokker 70",
+      "family": "Fokker F28/70/100"
+    },
+    {
+      "icao_type": "F100",
+      "name": "Fokker 100",
+      "family": "Fokker F28/70/100"
+    },
+    {
+      "icao_type": "SU95",
+      "name": "SSJ100",
+      "family": "Sukhoi Superjet 100"
+    },
+    {
+      "icao_type": "AJ27",
+      "name": "ARJ21-700",
+      "family": "Comac ARJ21"
+    },
+    {
+      "icao_type": "C919",
+      "name": "C919",
+      "family": "Comac C919"
+    },
+    {
+      "icao_type": "AT43",
+      "name": "ATR 42-300",
+      "family": "ATR 42/72"
+    },
+    {
+      "icao_type": "AT44",
+      "name": "ATR 42-400",
+      "family": "ATR 42/72"
+    },
+    {
+      "icao_type": "AT45",
+      "name": "ATR 42-500",
+      "family": "ATR 42/72"
+    },
+    {
+      "icao_type": "AT46",
+      "name": "ATR 42-600",
+      "family": "ATR 42/72"
+    },
+    {
+      "icao_type": "AT72",
+      "name": "ATR 72-200",
+      "family": "ATR 42/72"
+    },
+    {
+      "icao_type": "AT75",
+      "name": "ATR 72-500",
+      "family": "ATR 42/72"
+    },
+    {
+      "icao_type": "AT76",
+      "name": "ATR 72-600",
+      "family": "ATR 42/72"
+    },
+    {
+      "icao_type": "DH8A",
+      "name": "Dash 8-100",
+      "family": "De Havilland Canada Dash 8"
+    },
+    {
+      "icao_type": "DH8B",
+      "name": "Dash 8-200",
+      "family": "De Havilland Canada Dash 8"
+    },
+    {
+      "icao_type": "DH8C",
+      "name": "Dash 8-300",
+      "family": "De Havilland Canada Dash 8"
+    },
+    {
+      "icao_type": "DH8D",
+      "name": "Dash 8-400 / Q400",
+      "family": "De Havilland Canada Dash 8"
+    },
+    {
+      "icao_type": "F27",
+      "name": "F27 Friendship",
+      "family": "Fokker F27/50"
+    },
+    {
+      "icao_type": "F50",
+      "name": "Fokker 50",
+      "family": "Fokker F27/50"
+    },
+    {
+      "icao_type": "SF34",
+      "name": "Saab 340",
+      "family": "Saab 340/2000"
+    },
+    {
+      "icao_type": "SB20",
+      "name": "Saab 2000",
+      "family": "Saab 340/2000"
+    },
+    {
+      "icao_type": "SH33",
+      "name": "Shorts 330",
+      "family": "Short 330/360"
+    },
+    {
+      "icao_type": "SH36",
+      "name": "Shorts 360",
+      "family": "Short 330/360"
+    },
+    {
+      "icao_type": "L410",
+      "name": "L-410 Turbolet",
+      "family": "Let L-410"
+    },
+    {
+      "icao_type": "B190",
+      "name": "1900D",
+      "family": "Beechcraft 1900"
+    },
+    {
+      "icao_type": "E120",
+      "name": "EMB-120 Brasilia",
+      "family": "Embraer EMB-120 Brasilia"
+    },
+    {
+      "icao_type": "BE9L",
+      "name": "King Air 90",
+      "family": "King Air"
+    },
+    {
+      "icao_type": "BE20",
+      "name": "King Air 200/250",
+      "family": "King Air"
+    },
+    {
+      "icao_type": "B350",
+      "name": "King Air 350",
+      "family": "King Air"
+    },
+    {
+      "icao_type": "TBM7",
+      "name": "TBM 700",
+      "family": "TBM"
+    },
+    {
+      "icao_type": "TBM8",
+      "name": "TBM 850",
+      "family": "TBM"
+    },
+    {
+      "icao_type": "TBM9",
+      "name": "TBM 930/940",
+      "family": "TBM"
+    },
+    {
+      "icao_type": "C500",
+      "name": "Citation I",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C510",
+      "name": "Citation Mustang",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C525",
+      "name": "Citation CJ1",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C25A",
+      "name": "Citation CJ2",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C25B",
+      "name": "Citation CJ3",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C25C",
+      "name": "Citation CJ4",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C550",
+      "name": "Citation II",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C560",
+      "name": "Citation V",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C56X",
+      "name": "Citation Excel",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C650",
+      "name": "Citation III",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C680",
+      "name": "Citation Sovereign",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C68A",
+      "name": "Citation Latitude",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C700",
+      "name": "Citation Longitude",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "C750",
+      "name": "Citation X",
+      "family": "Cessna Citation"
+    },
+    {
+      "icao_type": "E50P",
+      "name": "Phenom 100",
+      "family": "Embraer Phenom/Legacy/Praetor"
+    },
+    {
+      "icao_type": "E55P",
+      "name": "Phenom 300",
+      "family": "Embraer Phenom/Legacy/Praetor"
+    },
+    {
+      "icao_type": "E35L",
+      "name": "Legacy 600/650",
+      "family": "Embraer Phenom/Legacy/Praetor"
+    },
+    {
+      "icao_type": "E545",
+      "name": "Legacy 450 / Praetor 500",
+      "family": "Embraer Phenom/Legacy/Praetor"
+    },
+    {
+      "icao_type": "E550",
+      "name": "Legacy 500 / Praetor 600",
+      "family": "Embraer Phenom/Legacy/Praetor"
+    },
+    {
+      "icao_type": "CL30",
+      "name": "Challenger 300",
+      "family": "Bombardier Challenger/Global"
+    },
+    {
+      "icao_type": "CL35",
+      "name": "Challenger 350",
+      "family": "Bombardier Challenger/Global"
+    },
+    {
+      "icao_type": "CL60",
+      "name": "Challenger 600/604/605/650",
+      "family": "Bombardier Challenger/Global"
+    },
+    {
+      "icao_type": "GL5T",
+      "name": "Global 5000/5500",
+      "family": "Bombardier Challenger/Global"
+    },
+    {
+      "icao_type": "GLEX",
+      "name": "Global 6000/6500",
+      "family": "Bombardier Challenger/Global"
+    },
+    {
+      "icao_type": "GL7T",
+      "name": "Global 7500",
+      "family": "Bombardier Challenger/Global"
+    },
+    {
+      "icao_type": "GLF2",
+      "name": "Gulfstream II",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GLF3",
+      "name": "Gulfstream III",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GLF4",
+      "name": "Gulfstream IV",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GLF5",
+      "name": "Gulfstream V",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GLF6",
+      "name": "G650",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "G150",
+      "name": "G150",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "G250",
+      "name": "G280",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GALX",
+      "name": "G200",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GA5C",
+      "name": "G500",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GA6C",
+      "name": "G600",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GA7C",
+      "name": "G700",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "GA8C",
+      "name": "G800",
+      "family": "Gulfstream"
+    },
+    {
+      "icao_type": "F2TH",
+      "name": "Falcon 2000",
+      "family": "Dassault Falcon"
+    },
+    {
+      "icao_type": "F900",
+      "name": "Falcon 900",
+      "family": "Dassault Falcon"
+    },
+    {
+      "icao_type": "FA50",
+      "name": "Falcon 50",
+      "family": "Dassault Falcon"
+    },
+    {
+      "icao_type": "FA7X",
+      "name": "Falcon 7X",
+      "family": "Dassault Falcon"
+    },
+    {
+      "icao_type": "FA8X",
+      "name": "Falcon 8X",
+      "family": "Dassault Falcon"
+    },
+    {
+      "icao_type": "FA6X",
+      "name": "Falcon 6X",
+      "family": "Dassault Falcon"
+    },
+    {
+      "icao_type": "LJ35",
+      "name": "Learjet 35",
+      "family": "Learjet"
+    },
+    {
+      "icao_type": "LJ45",
+      "name": "Learjet 45",
+      "family": "Learjet"
+    },
+    {
+      "icao_type": "LJ60",
+      "name": "Learjet 60",
+      "family": "Learjet"
+    },
+    {
+      "icao_type": "LJ70",
+      "name": "Learjet 70",
+      "family": "Learjet"
+    },
+    {
+      "icao_type": "LJ75",
+      "name": "Learjet 75",
+      "family": "Learjet"
+    },
+    {
+      "icao_type": "PC12",
+      "name": "PC-12",
+      "family": "Pilatus"
+    },
+    {
+      "icao_type": "PC24",
+      "name": "PC-24",
+      "family": "Pilatus"
+    },
+    {
+      "icao_type": "SF50",
+      "name": "Vision Jet SF50",
+      "family": "Cirrus Vision Jet"
+    },
+    {
+      "icao_type": "HDJT",
+      "name": "HondaJet HA-420",
+      "family": "HondaJet"
+    }
+  ]
+}
