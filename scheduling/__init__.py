@@ -6,4 +6,5 @@
 """
 
 from scheduling.random_route import get_random_route
-from scheduling.route_between_points import route_between_points
+from scheduling.route_between_points import get_route_between_points
+from scheduling.create_schedule import create_schedule

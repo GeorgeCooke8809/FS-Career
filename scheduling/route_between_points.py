@@ -2,7 +2,7 @@ from models.route import Route
 from models.base import with_session
 
 @with_session
-def route_between_points(Session, airline_icao: str, origin: str, destination: str):
+def get_route_between_points(Session, airline_icao: str, origin: str, destination: str):
     """Gets the route between two points. Most useful for getting the return flight of a randomly generated flight.
 
     Args:

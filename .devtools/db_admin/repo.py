@@ -20,6 +20,7 @@ def search_airlines(
     text: str | None,
     country: str | None = None,
     has_logo: bool | None = None,
+    network_model: str | None = None,
     page: int = 1,
     page_size: int = 50,
 ) -> tuple[list[Airline], int]:
@@ -39,6 +40,10 @@ def search_airlines(
         stmt = stmt.where(Airline.country == country)
     if has_logo is not None:
         stmt = stmt.where(Airline.has_logo == has_logo)
+    if network_model == "unset":
+        stmt = stmt.where(Airline.network_model.is_(None))
+    elif network_model is not None:
+        stmt = stmt.where(Airline.network_model == network_model)
     stmt = stmt.order_by(Airline.icao)
     total = session.scalar(select(func.count()).select_from(stmt.subquery()))
     rows = session.execute(

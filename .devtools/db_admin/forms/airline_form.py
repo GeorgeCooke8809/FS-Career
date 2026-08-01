@@ -7,11 +7,15 @@ from db_admin.db import LOGOS_DIR
 from db_admin.forms.base_form import BaseRecordForm
 from db_admin.widgets.error_dialog import show_error
 from db_admin.widgets.image_thumbnail import delete_logo, load_thumbnail, save_logo
+from models.airline import NETWORK_MODELS
 
 IMAGE_FILETYPES = [
     ("Image files", "*.png *.jpg *.jpeg *.gif *.bmp"),
     ("All files", "*.*"),
 ]
+
+NETWORK_MODEL_UNSET = "(unset)"
+NETWORK_MODEL_CHOICES = [NETWORK_MODEL_UNSET, *NETWORK_MODELS]
 
 
 class AirlineForm(BaseRecordForm):
@@ -55,6 +59,14 @@ class AirlineForm(BaseRecordForm):
         self.country_entry.grid(row=row, column=1, sticky="ew", pady=8)
         if self.record:
             self.country_entry.insert(0, self.record.country)
+        row += 1
+
+        self.add_label_row(parent, row, "Network Model")
+        self.network_model_menu = ctk.CTkOptionMenu(parent, values=NETWORK_MODEL_CHOICES)
+        self.network_model_menu.grid(row=row, column=1, sticky="ew", pady=8)
+        self.network_model_menu.set(
+            self.record.network_model if self.record and self.record.network_model else NETWORK_MODEL_UNSET
+        )
         row += 1
 
         self.add_label_row(parent, row, "Logo")
@@ -143,12 +155,14 @@ class AirlineForm(BaseRecordForm):
         return errors
 
     def save(self) -> None:
+        network_model = self.network_model_menu.get()
         fields = dict(
             iata=self.iata_entry.get().strip().upper() or None,
             name=self.name_entry.get().strip(),
             callsign=self.callsign_entry.get().strip(),
             country=self.country_entry.get().strip(),
             has_logo=self._has_logo,
+            network_model=None if network_model == NETWORK_MODEL_UNSET else network_model,
         )
         if self.is_edit:
             repo.update_airline(self.session, self.record, **fields)

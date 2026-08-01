@@ -5,14 +5,22 @@ from db_admin.forms.airline_form import AirlineForm
 from db_admin.screens.base_screen import BaseTableScreen
 from db_admin.widgets.image_thumbnail import load_thumbnail
 
+NETWORK_MODEL_FILTER_LABELS = {
+    "Network: All": None,
+    "Network: Hub-and-spoke": "hub_and_spoke",
+    "Network: Point-to-point": "point_to_point",
+    "Network: Unset": "unset",
+}
+
 
 class AirlinesScreen(BaseTableScreen):
-    columns = ["Logo", "ICAO", "IATA", "Name", "Callsign", "Country"]
+    columns = ["Logo", "ICAO", "IATA", "Name", "Callsign", "Country", "Network Model"]
     referenced_by_label = "Routes"
 
     def build_filters(self, parent: ctk.CTkFrame) -> None:
         self.country_filter: str | None = None
         self.has_logo_filter: bool | None = None
+        self.network_model_filter: str | None = None
 
         countries = repo.distinct_airline_countries(self.session)
         self.country_menu = ctk.CTkOptionMenu(
@@ -26,7 +34,14 @@ class AirlinesScreen(BaseTableScreen):
             command=self._on_has_logo_change, width=120,
         )
         self.has_logo_menu.set("Logo: All")
-        self.has_logo_menu.pack(side="left")
+        self.has_logo_menu.pack(side="left", padx=(0, 8))
+
+        self.network_model_menu = ctk.CTkOptionMenu(
+            parent, values=list(NETWORK_MODEL_FILTER_LABELS),
+            command=self._on_network_model_change, width=180,
+        )
+        self.network_model_menu.set("Network: All")
+        self.network_model_menu.pack(side="left")
 
     def _on_country_change(self, value: str) -> None:
         self.country_filter = None if value == "All Countries" else value
@@ -36,15 +51,20 @@ class AirlinesScreen(BaseTableScreen):
         self.has_logo_filter = {"Logo: All": None, "Logo: Yes": True, "Logo: No": False}[value]
         self.on_filter_change()
 
+    def _on_network_model_change(self, value: str) -> None:
+        self.network_model_filter = NETWORK_MODEL_FILTER_LABELS[value]
+        self.on_filter_change()
+
     def fetch_rows(self, page: int):
         return repo.search_airlines(
             self.session, self.search_text,
             country=self.country_filter, has_logo=self.has_logo_filter,
+            network_model=self.network_model_filter,
             page=page, page_size=self.page_size,
         )
 
     def format_row(self, obj) -> list[str]:
-        return ["", obj.icao, obj.iata or "", obj.name, obj.callsign, obj.country]
+        return ["", obj.icao, obj.iata or "", obj.name, obj.callsign, obj.country, obj.network_model or ""]
 
     def cell_widgets(self) -> dict:
         return {0: self._logo_cell}
