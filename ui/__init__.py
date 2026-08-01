@@ -1,2 +1,1 @@
-import customtkinter as ctk
-
+from ui.app import App

@@ -1,5 +1,9 @@
+from ui import App
+import customtkinter
+
 def main():
-    print("Hello from fs-career!")
+    customtkinter.set_appearance_mode("dark")
+    App()
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import logging
 
 # TODO: Make schedule redirect to base on first flight if not already when career mode implemented - At the moment, the logic will try to redirect to wherever the origin is for the end of the schedule. It is possible that this will not be the base of the player.
 # TODO: Make type rating constraint - at the moment, routes from any aircraft can be generated. This should be fixed
+# TODO: Add departure and arrival times for routes
 
 @with_session
 def create_schedule(Session, airline_icao: str, origin: str, no_flights: int, min_flight_duration: int = 0, max_flight_duration = 10_000) -> list[Route]:
@@ -61,7 +62,7 @@ def create_hub_and_spoke_schedule(airline_icao: str, origin: str, no_flights: in
 
 
 def create_point_to_point_schedule(airline_icao: str, origin: str, no_flights: int, min_flight_duration: int, max_flight_duration: int, attempts_remaining: int = 5) -> list[Route]:
-    # ? Make this use a reverse dijkstra to find the best route instead of messy solution - is it really needed, the current systems works well in all tests
+    # ? Make this use a reverse dijkstra to find the best route instead of messy solution - is it really needed, the current systems works well in all tests. This would be more important for simulation in bulk (e.g.: simulating schedules for all pilots in an airline).
     if attempts_remaining == 0:
         raise ValueError("Sparse point to point network, borderline impossible to create route")
 

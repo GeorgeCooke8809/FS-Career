@@ -13,7 +13,7 @@ alembic.ini            # alembic config (points at migrations/)
 models/                # SQLAlchemy ORM models — the shared data layer
 migrations/             # Alembic migration scripts (schema history)
 data/                  # the SQLite DB itself, seed data, and seed/build scripts
-flights/                # gameplay logic that queries the data layer (route generation, etc.)
+scheduling/             # gameplay logic that queries the data layer (route/schedule generation)
 ui/                    # the shipped app's GUI (CustomTkinter) — not started beyond a stub
 .devtools/db_admin/     # internal-only Tkinter GUI for browsing/editing seed data
 .docs/                 # this documentation
@@ -49,9 +49,19 @@ Standard Alembic layout (`env.py`, `script.py.mako`, `versions/`). Run `uv run a
   - `raw/` — unprocessed source downloads the `build_*` scripts consume.
   - Anything not fitting that pair (e.g. `fetch_airline_logos.py`, conflict-resolution CSVs) is a one-off tool used during that table's import; see the relevant `memory/project_*.md` note for why it exists.
 
-## `flights/` — gameplay logic
+## `scheduling/` — gameplay logic
 
-Where game logic that operates on the data layer lives, as opposed to raw data access (`models/`) or data curation (`data/seed/`). Currently just `random_flight.py` (route-generation stub, not yet implemented) — expect this package to grow as the roadmap's route-generation/hiring/career-progression items (see `OVERVIEW.md`) get built.
+Where game logic that operates on the data layer lives, as opposed to raw data access (`models/`) or data curation (`data/seed/`). Expect this package to grow as the roadmap's route-generation/hiring/career-progression items (see `OVERVIEW.md`) get built. Currently:
+
+- `random_route.py` — `get_random_route(airline_icao, origin, max_duration, min_duration)`: picks a random `Route` for an airline from a given origin within a duration band.
+- `route_between_points.py` — `get_route_between_points(airline_icao, origin, destination)`: looks up the specific route connecting two airports for an airline (used to find the return/connecting leg after picking a random outbound one).
+- `create_schedule.py` — `create_schedule(airline_icao, origin, no_flights, min_flight_duration, max_flight_duration)`: builds a multi-leg pilot schedule, branching on `Airline.network_model`:
+  - `hub_and_spoke` (`create_hub_and_spoke_schedule`) — alternates a random outbound leg from `origin` with the known return leg back to `origin`, bounded by a 600-minute (10-hour) duty-time cap. An odd `no_flights` is allowed to end away from base (a layover) rather than forcing an even number of legs.
+  - `point_to_point` (`create_point_to_point_schedule`) — chains random legs from wherever the previous leg landed, then retries (up to 10 times) to find a route back to `origin` for the final leg; if that fails, or the whole schedule exceeds the duty-time cap, it recurses with one fewer `attempts_remaining` and restarts from scratch. Not graph-pathfinding — a real shortest-path/reachability solve is a possible future improvement (see comment in the file) but the retry approach has been sufficient so far.
+  - `no_flights == 1` short-circuits to a single `get_random_route` call regardless of network model.
+  - Two known gaps flagged by `TODO`s in the file: no type-rating constraint yet (routes can be generated for any aircraft), and no logic to redirect an out-of-position schedule back to the player's actual base once career mode exists.
+
+All three modules are re-exported from `scheduling/__init__.py`.
 
 ## `ui/` — shipped app GUI
 
