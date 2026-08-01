@@ -16,7 +16,7 @@ def _set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine, expire_on_commit=False)
 
 class Base(DeclarativeBase):
     pass
@@ -34,3 +34,4 @@ def with_session(func):
             raise
         finally:
             session.close()
+    return wrap
