@@ -9,7 +9,7 @@ from models import Aircraft, Airline, Airport
 
 
 class RoutesScreen(BaseTableScreen):
-    columns = ["Flight", "Airline", "Origin", "Destination", "Aircraft", "Dep. (UTC)", "Dist (nm)"]
+    columns = ["Flight", "Airline", "Origin", "Destination", "Aircraft", "Dist (nm)"]
     page_size = 50
 
     def build_filters(self, parent: ctk.CTkFrame) -> None:
@@ -142,7 +142,6 @@ class RoutesScreen(BaseTableScreen):
             obj.origin_icao,
             obj.destination_icao,
             obj.aircraft_icao_type,
-            obj.departure_time_utc.strftime("%H:%M"),
             f"{obj.distance_nm:.0f}",
         ]
 

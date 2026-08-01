@@ -1,7 +1,6 @@
-from datetime import time
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, CheckConstraint, ForeignKey, String, Time, UniqueConstraint
+from sqlalchemy import Boolean, CheckConstraint, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
@@ -38,7 +37,6 @@ class Route(Base):
 
     flight_number: Mapped[str]
     distance_nm: Mapped[float]
-    departure_time_utc: Mapped[time] = mapped_column(Time)
     duration_minutes: Mapped[int]
 
     flight_number_synthetic: Mapped[bool] = mapped_column(Boolean, default=True, server_default="1")

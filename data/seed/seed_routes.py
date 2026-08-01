@@ -1,13 +1,12 @@
 """One-time load of data/seed/routes_seed.json into the routes table.
 
 Built from OpenFlights' route network data, matched against our own
-airlines/airports/aircraft tables, with flight numbers/departure
-times/durations synthesized (no free bulk source has real schedules) - see
+airlines/airports/aircraft tables, with flight numbers/durations
+synthesized (no free bulk source has real schedules) - see
 data/seed/build_routes_seed.py and memory/project_routes_import.md for the
 full process.
 """
 import json
-from datetime import time
 from pathlib import Path
 
 from sqlalchemy import create_engine
@@ -36,7 +35,6 @@ def main() -> None:
                     aircraft_icao_type=r["aircraft_icao_type"],
                     flight_number=r["flight_number"],
                     distance_nm=r["distance_nm"],
-                    departure_time_utc=time.fromisoformat(r["departure_time_utc"]),
                     duration_minutes=r["duration_minutes"],
                     flight_number_synthetic=r.get("flight_number_synthetic", True),
                     schedule_synthetic=r.get("schedule_synthetic", True),

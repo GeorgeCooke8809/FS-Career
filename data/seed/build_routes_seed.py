@@ -2,8 +2,8 @@
 airports.dat/planes.dat (data/seed/openflights_raw/, jpatokal/openflights).
 
 OpenFlights gives real airline -> route -> aircraft-type networks but no flight
-numbers, departure times, or durations (it's a ~2014 snapshot with no schedule
-data at all). Scope and approach - see memory/project_routes_import.md:
+numbers or durations (it's a ~2014 snapshot with no schedule data at all).
+Scope and approach - see memory/project_routes_import.md:
 
 - Only routes matched to rows already in our airlines/airports/aircraft tables
   are kept; everything else (airlines/airports/equipment we don't have) is
@@ -23,15 +23,13 @@ data at all). Scope and approach - see memory/project_routes_import.md:
   get aircraft_icao_type_synthetic=True.
 - distance_nm is computed via great-circle from our own airports table
   (authoritative, already in the DB) rather than OpenFlights' coordinates.
-- flight_number, departure_time_utc, and duration_minutes are synthesized
-  (real-world schedules aren't available in bulk from any free source):
-  flight numbers are assigned sequentially per airline; departure times are
-  spread deterministically across the day; durations are distance divided by
-  a per-aircraft-category cruise speed plus a fixed taxi/climb/descent
+- flight_number and duration_minutes are synthesized (real-world schedules
+  aren't available in bulk from any free source): flight numbers are
+  assigned sequentially per airline; durations are distance divided by a
+  per-aircraft-category cruise speed plus a fixed taxi/climb/descent
   buffer, rounded to the nearest 5 minutes.
 """
 import csv
-import hashlib
 import json
 import math
 import sqlite3
@@ -231,13 +229,6 @@ def main():
             flight_number_counters[airline_icao] = n
             flight_number = str(100 + n)
 
-            # Deterministic pseudo-random departure time spread across the day,
-            # in 5-minute increments, seeded from the route key so reruns are stable.
-            digest = hashlib.md5("|".join(key).encode()).hexdigest()
-            seed = int(digest, 16) % (24 * 12)
-            hour, minute_slot = divmod(seed, 12)
-            departure_time_utc = f"{hour:02d}:{minute_slot * 5:02d}:00"
-
             routes.append(
                 {
                     "airline_icao": airline_icao,
@@ -246,7 +237,6 @@ def main():
                     "aircraft_icao_type": aircraft_icao_type,
                     "flight_number": flight_number,
                     "distance_nm": round(distance_nm, 1),
-                    "departure_time_utc": departure_time_utc,
                     "duration_minutes": duration_minutes,
                     "flight_number_synthetic": True,
                     "schedule_synthetic": True,

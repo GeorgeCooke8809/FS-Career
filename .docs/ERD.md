@@ -48,7 +48,6 @@ erDiagram
         string aircraft_icao_type FK
         string flight_number
         float distance_nm
-        time departure_time_utc
         int duration_minutes
     }
 ```
