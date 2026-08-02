@@ -1,2 +1,2 @@
-data/seed/*.json linguist-generated
-data/logos/*.png linguist-generated
+data/seed/*.json linguist-generated -diff
+data/logos/*.png linguist-generated -diff
