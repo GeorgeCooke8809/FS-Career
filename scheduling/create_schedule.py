@@ -1,5 +1,4 @@
-from models import Airline
-from models import Route
+from models import Airline, Route
 from models.base import with_session
 from scheduling import get_random_route, get_route_between_points
 import logging
@@ -7,6 +6,8 @@ import logging
 # TODO: Make schedule redirect to base on first flight if not already when career mode implemented - At the moment, the logic will try to redirect to wherever the origin is for the end of the schedule. It is possible that this will not be the base of the player.
 # TODO: Make type rating constraint - at the moment, routes from any aircraft can be generated. This should be fixed
 # TODO: Add departure and arrival times for routes
+
+MAXIMUM_LEGAL_SHIFT_DURATION = 600 # in minutes (=10 hours)
 
 @with_session
 def create_schedule(Session, airline_icao: str, origin: str, no_flights: int, min_flight_duration: int = 0, max_flight_duration = 10_000) -> list[Route]:
@@ -35,11 +36,12 @@ def create_hub_and_spoke_schedule(airline_icao: str, origin: str, no_flights: in
     schedule = []
     total_duration = 0
 
-    while len(schedule) < no_flights and total_duration < 600: # Check if schedule shorter than desired and pilot is under legal flying hour limit (10 hours)
+    while len(schedule) < no_flights and total_duration < MAXIMUM_LEGAL_SHIFT_DURATION: # Check if schedule shorter than desired and pilot is under legal flying hour limit (10 hours)
         outbound_route: Route = get_random_route(airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)
         temp_total_duration = total_duration + outbound_route.duration_minutes
 
-        if temp_total_duration > 600 and len(schedule) > 0: # do not add the new route if it will break time limits unless it is the first route
+        if temp_total_duration > MAXIMUM_LEGAL_SHIFT_DURATION and len(schedule) > 0: # do not add the new route if it will break time limits (10 hours = 600 minutes) unless it is the first route
+            logging.info(f"Breaking: Not adding {outbound_route}")
             break
 
         total_duration = temp_total_duration
@@ -52,7 +54,8 @@ def create_hub_and_spoke_schedule(airline_icao: str, origin: str, no_flights: in
 
         temp_total_duration = total_duration + return_route.duration_minutes
 
-        if temp_total_duration > 600 or len(schedule) == no_flights: # do not add the new route if it will break time or flight limits. This allows for ending away from base to simulate layovers
+        if temp_total_duration > MAXIMUM_LEGAL_SHIFT_DURATION or len(schedule) == no_flights: # do not add the new route if it will break time (10 hours = 600 minutes) or flight limits. This allows for ending away from base to simulate layovers
+            logging.info(f"Breaking: Not adding {return_route}")
             break
 
         total_duration = temp_total_duration
@@ -95,7 +98,7 @@ def create_point_to_point_schedule(airline_icao: str, origin: str, no_flights: i
 
     logging.info(f"{total_duration = }")
 
-    if total_duration > 600:
+    if total_duration > MAXIMUM_LEGAL_SHIFT_DURATION:
         logging.info("Schedule was too long. Restarting ...")
         schedule = create_point_to_point_schedule(airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration, attempts_remaining=attempts_remaining-1)
 

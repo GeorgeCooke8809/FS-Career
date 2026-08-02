@@ -1,5 +1,9 @@
 import customtkinter
 from ui.active_day_schedule import ActiveDaySchedule
+from utils import validation
+from tkinter import messagebox
+from models import Route
+from scheduling import create_schedule
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -7,12 +11,91 @@ class App(customtkinter.CTk):
 
         self.geometry("500x750")
         self.minsize(500, 750)
-        self.title("Random Schedule Generator")
+        self.title("Random Flight Schedule Generator")
 
-        # TODO: Add all of the controlling widgets at the top
-
-        self.content = ActiveDaySchedule(self, schedule=[])
+        self._create_widgets()
 
         self.mainloop()
 
-    # TODO: Add Generate schedule functionality
+    def _create_widgets(self):
+        self.airline_entry = customtkinter.CTkEntry(self, placeholder_text="Airline ICAO")
+
+        self.origin_entry = customtkinter.CTkEntry(self, placeholder_text="Origin ICAO")
+        self.flight_count_entry = customtkinter.CTkEntry(self, placeholder_text="No. Flights") # Will have to validate is numeric
+
+        self.min_flight_dur_entry = customtkinter.CTkEntry(self, placeholder_text="Min Duration (Mins)") # Will have to validate is numeric
+        self.max_flight_dur_entry = customtkinter.CTkEntry(self, placeholder_text="Max Duration (Mins)") # Will have to validate is numeric
+
+        self.generate_schedule_button = customtkinter.CTkButton(self, text="Generate Schedule", command=self._generate_schedule_click)
+
+        self.content = ActiveDaySchedule(self, schedule=[])
+
+        self._draw_widgets()
+
+    def _draw_widgets(self):
+        self.rowconfigure((0,1,2,3), weight=1, minsize=25)
+        self.rowconfigure(4, weight=10_000)
+
+        self.columnconfigure((0,1), weight=1)
+
+
+        self.airline_entry.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=5, pady=2.5)
+
+        self.origin_entry.grid(row=1, column=0, sticky="nsew", padx=5, pady=2.5)
+        self.flight_count_entry.grid(row=1, column=1, sticky="nsew", padx=5, pady=2.5)
+
+        self.min_flight_dur_entry.grid(row=2, column=0, sticky="nsew", padx=5, pady=2.5)
+        self.max_flight_dur_entry.grid(row=2, column=1, sticky="nsew", padx=5, pady=2.5)
+
+        self.generate_schedule_button.grid(row=3, column=0, columnspan=2, sticky="nsew", padx=5, pady=2.5)
+
+        self.content.grid(row=4, column=0, columnspan=2, sticky="nsew")
+
+    def _schedule_fail(self, message: str) -> None:
+        messagebox.showerror("Schedule Error", message)
+        return None
+
+    def _generate_schedule_click(self):
+        # Getting data
+        airline_icao = self.airline_entry.get().upper()
+        origin_icao = self.origin_entry.get().upper()
+        no_flights = self.flight_count_entry.get()
+        min_flight_dur = self.min_flight_dur_entry.get()
+        max_flight_dur = self.max_flight_dur_entry.get()
+
+        if min_flight_dur == "":
+            min_flight_dur = "0"
+        if max_flight_dur == "":
+            max_flight_dur = "10000"
+
+
+        # Validation
+        if not validation.check_airline_icao_exists(airline_icao):
+            return self._schedule_fail("Airline does not exist")
+
+        if not validation.check_airport_icao_exists(origin_icao):
+            return self._schedule_fail("Airport does not exist")
+
+        values_to_check = [[no_flights, "Number of flights"], [min_flight_dur, "Minimum flight duration"], [max_flight_dur, "Maximum flight duration"]]
+
+        for value, message in values_to_check:
+            if not value.isnumeric():
+                return self._schedule_fail(f"{message} must be numeric.")
+
+        no_flights = int(no_flights)
+        min_flight_dur = int(min_flight_dur)
+        max_flight_dur = int(max_flight_dur)
+
+        try:
+            schedule: list[Route] = create_schedule(airline_icao, origin_icao, no_flights, min_flight_dur, max_flight_dur)
+        except Exception as e:
+            print(e)
+            return self._schedule_fail("Something went wrong generating the schedule.")
+
+        if schedule is None:
+            return self._schedule_fail("Something went wrong generating the schedule.")
+
+        print(schedule)
+
+        self.content = ActiveDaySchedule(self, schedule=schedule)
+        self.content.grid(row=4, column=0, columnspan=2, sticky="nsew")
