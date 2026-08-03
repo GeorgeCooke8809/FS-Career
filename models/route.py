@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from models.aircraft import Aircraft
     from models.airline import Airline
     from models.airport import Airport
+    from models.schedule import Schedule
 
 
 class Route(Base):
@@ -51,6 +52,7 @@ class Route(Base):
     destination: Mapped["Airport"] = relationship(
         back_populates="arrivals", foreign_keys=[destination_icao]
     )
+    schedules: Mapped[list["Schedule"]] = relationship(back_populates="route")
 
     def __repr__(self) -> str:
         return f"<Route {self.airline_icao}{self.flight_number} {self.origin_icao}->{self.destination_icao}>"
