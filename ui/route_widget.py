@@ -1,17 +1,18 @@
 import customtkinter
-from models import Route
+from models import Route, Schedule
 from PIL import Image
 import sys, os
 import ui.theme as theme
+from datetime import timedelta, time, datetime
 
 class RouteWidget(customtkinter.CTkFrame):
-    def __init__(self, parent, route: Route, flight_status: str, height: int = 90):
+    def __init__(self, parent, schedule: Schedule, flight_status: str, height: int = 90):
         super().__init__(parent, corner_radius=0, height=height)
         self.grid_propagate(False)
 
-        self._create_widgets(route, flight_status, height)
+        self._create_widgets(schedule, flight_status, height)
 
-    def _create_widgets(self, route: Route, flight_status: str, height: int):
+    def _create_widgets(self, schedule: Schedule, flight_status: str, height: int):
         if flight_status == "completed":
             side_colour = theme.Colours.ROUTE_CARD_COMPLETED_SIDE
         elif flight_status == "current":
@@ -20,7 +21,7 @@ class RouteWidget(customtkinter.CTkFrame):
             side_colour = theme.Colours.ROUTE_CARD_FUTURE_SIDE
 
         self.left_colour = customtkinter.CTkFrame(self, fg_color=side_colour, width=5, corner_radius=0)
-        self.content = RouteContent(self, route)
+        self.content = RouteContent(self, schedule)
         self.right_colour = customtkinter.CTkFrame(self, fg_color=side_colour, width=5, corner_radius=0)
 
         self._draw_widgets()
@@ -38,14 +39,21 @@ class RouteWidget(customtkinter.CTkFrame):
 
 class RouteContent(customtkinter.CTkFrame):
     # TODO: Fix: Sometimes different ICAO codes take up different widths and shift the plane icon
-    def __init__(self, parent, route: Route):
+    def __init__(self, parent, schedule: Schedule):
         super().__init__(parent, corner_radius=0)
 
-        self._create_widgets(route)
+        self._create_widgets(schedule)
 
-    def _create_widgets(self, route: Route):
+    def _create_widgets(self, schedule: Schedule):
+        route = schedule.route
         hours = route.duration_minutes // 60
         minutes = route.duration_minutes % 60
+
+        departure_time_utc = schedule.departure_time_utc
+        arrival_time_utc = (datetime.combine(datetime.min, departure_time_utc) + timedelta(minutes=route.duration_minutes)).time()
+
+        # TODO: Convert to local times too.
+        departure_time_utc
 
         script_dir = sys.path[0]
         aircraft_logo_dir = os.path.join(script_dir, ".\\src\\aircraft_icon.png")
@@ -64,9 +72,9 @@ class RouteContent(customtkinter.CTkFrame):
         self.arrival_icao = customtkinter.CTkLabel(self, text=route.destination_icao, font=theme.Fonts.route_card_airport_icao())
 
         # BOTTOM ROW
-        self.departure_utc = customtkinter.CTkLabel(self, text="PLACE", font=theme.Fonts.route_card_subheader())
+        self.departure_utc = customtkinter.CTkLabel(self, text=f"{departure_time_utc.strftime("%H:%M")} UTC", font=theme.Fonts.route_card_subheader())
         self.callsign = customtkinter.CTkLabel(self, text=f"{route.airline_icao}{route.flight_number}", font=theme.Fonts.route_card_subheader())
-        self.arrival_utc = customtkinter.CTkLabel(self, text="PLACE", font=theme.Fonts.route_card_subheader())
+        self.arrival_utc = customtkinter.CTkLabel(self, text=f"{arrival_time_utc.strftime("%H:%M")} UTC", font=theme.Fonts.route_card_subheader())
 
         self._draw_widgets()
 
@@ -77,16 +85,14 @@ class RouteContent(customtkinter.CTkFrame):
 
         self.columnconfigure((0,1,2), weight=1)
 
-        self.departure_local.grid(row=0, column=0)
-        self.flight_duration.grid(row=0, column=1)
-        self.arrival_local.grid(row=0, column=2)
+        self.departure_local.grid(row=0, column=0, sticky="nsew")
+        self.flight_duration.grid(row=0, column=1, sticky="nsew")
+        self.arrival_local.grid(row=0, column=2, sticky="nsew")
 
-        self.departure_icao.grid(row=1, column=0)
-        self.aircraft_logo.grid(row=1, column=1)
-        self.arrival_icao.grid(row=1, column=2)
+        self.departure_icao.grid(row=1, column=0, sticky="nsew")
+        self.aircraft_logo.grid(row=1, column=1, sticky="nsew")
+        self.arrival_icao.grid(row=1, column=2, sticky="nsew")
 
-        self.departure_utc.grid(row=2, column=0)
-        self.callsign.grid(row=2, column=1)
-        self.arrival_utc.grid(row=2, column=2)
-
-        self.columnconfigure((0,1,2), weight=1)
+        self.departure_utc.grid(row=2, column=0, sticky="nsew")
+        self.callsign.grid(row=2, column=1, sticky="nsew")
+        self.arrival_utc.grid(row=2, column=2, sticky="nsew")

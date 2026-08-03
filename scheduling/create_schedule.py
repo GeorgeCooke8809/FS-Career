@@ -1,105 +1,58 @@
-from models import Airline, Route
+from models import Schedule, Route, Career
+from sqlalchemy.orm import Session
+
+from datetime import datetime, timedelta
+from random import randint
+
+from scheduling.generate_schedule import create_day_schedule
+
 from models.base import with_session
-from scheduling import get_random_route, get_route_between_points
-import logging
 
-# TODO: Make schedule redirect to base on first flight if not already when career mode implemented - At the moment, the logic will try to redirect to wherever the origin is for the end of the schedule. It is possible that this will not be the base of the player.
-# TODO: Make type rating constraint - at the moment, routes from any aircraft can be generated. This should be fixed
-# TODO: Add departure and arrival times for routes
+"""
+Uses generate_schedule.py to generate a schedule for the given number of days and saves it to the schedule database.
+Use generate_schedule if looking to just create a schedule for a single day
+"""
 
-MAXIMUM_LEGAL_SHIFT_DURATION = 600 # in minutes (=10 hours)
+# TODO: Make new days push destination towards base one career implemented - currently runs risk of drifting away from base. It could be possible to do this in generate schedule instead of here.
 
 @with_session
-def create_schedule(Session, airline_icao: str, origin: str, no_flights: int, min_flight_duration: int = 0, max_flight_duration = 10_000) -> list[Route]:
-    airline: Airline = (
-        Session.query(Airline)
-        .filter(Airline.icao == airline_icao)
-        .first()
-    )
+def create_schedule(Session: Session, career_id: int, airline_icao: str, origin: str, no_daily_flights: int, min_flight_duration: int = 0, max_flight_duration = 10_000, no_days:int = 30, min_layover_duration: int = 20, max_layover_duration: int = 45):
+    if no_days == 0:
+        return None
 
-    if no_flights == 1:
-        logging.info(f"Getting random route for single flight schedule")
-        return [get_random_route(airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)]
-    elif airline.network_model == "hub_and_spoke" or no_flights == 2:
-        logging.info(f"Using hub and spoke model for {airline_icao} with {no_flights} flights")
-        return create_hub_and_spoke_schedule(airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)
-    elif airline.network_model == "point_to_point":
-        logging.info(f"Using point to point model for {airline_icao}")
-        return create_point_to_point_schedule(airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)
-    elif airline.network_model == None:
-        raise ValueError("Airline has not been assigned network_model")
-    else:
-        raise ValueError(f"Invalid network_model in database: {airline.network_model} for {airline.icao}")
+    current_day = Session.query(Career.current_day).filter(Career.id == career_id).scalar()
+
+    if current_day == None:
+            raise ValueError("Career does not exist")
+
+    current_max_schedule = Session.query(Schedule.day_no).filter(Schedule.career_id == career_id).order_by(Schedule.day_no.desc()).scalar()
+    if current_max_schedule == None: current_max_schedule = -1 # Edge case for if no schedule has been created in career
+
+    if current_day <= current_max_schedule: # This will mean that the date will have to be incremented BEFORE the creation of a new schedule when career is implemented
+        raise ValueError("Cannot make new schedule, the old schedule has not yet been completed!")
 
 
-def create_hub_and_spoke_schedule(airline_icao: str, origin: str, no_flights: int, min_flight_duration: int, max_flight_duration: int) -> list[Route]:
-    schedule = []
-    total_duration = 0
+    day_schedules: list[list[Route]] = [create_day_schedule(airline_icao=airline_icao, origin=origin, no_flights=no_daily_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)] # A 2D array of all day schedules created.
 
-    while len(schedule) < no_flights and total_duration < MAXIMUM_LEGAL_SHIFT_DURATION: # Check if schedule shorter than desired and pilot is under legal flying hour limit (10 hours)
-        outbound_route: Route = get_random_route(airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)
-        temp_total_duration = total_duration + outbound_route.duration_minutes
+    for _ in range(no_days-1):
+        day_origin = day_schedules[-1][-1].destination_icao
+        day_schedules += [create_day_schedule(airline_icao=airline_icao, origin=day_origin, no_flights=no_daily_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)]
 
-        if temp_total_duration > MAXIMUM_LEGAL_SHIFT_DURATION and len(schedule) > 0: # do not add the new route if it will break time limits (10 hours = 600 minutes) unless it is the first route
-            logging.info(f"Breaking: Not adding {outbound_route}")
-            break
+    for day in day_schedules:
+        random_hour = randint(0, 23)
+        random_minute = 5 * randint(0, 11) # Minute of schedule start rounded to nearest 5 mins
+        next_flight_start = datetime.min.replace(hour=random_hour, minute=random_minute) # generate departure time of first flight in day schedule on the minimum possible date value
 
-        total_duration = temp_total_duration
-        schedule += [outbound_route]
+        flight_index = -1
 
-        return_route: Route = get_route_between_points(airline_icao=airline_icao, origin=outbound_route.destination_icao, destination=origin) # database is guarded in the hub and spoke model so that this will never return none
+        for route in day:
+            flight_index += 1
 
-        if return_route == None:
-            raise ValueError("Return route returned none - this likely indicates a corrupted hub and spoke model airline in the database")
+            new_schedule = Schedule(day_no=current_day, flight_index=flight_index, route=route, departure_time_utc=next_flight_start.time(), status="future", career_id=career_id)
 
-        temp_total_duration = total_duration + return_route.duration_minutes
+            layover_duration = max(min_layover_duration, min(5 * round(randint(min_layover_duration, max_layover_duration + 1) / 5), max_layover_duration)) # random layover duration rounded to nearest 5 minutes kept within bounds of min/max
+            next_flight_start += timedelta(minutes=route.duration_minutes + layover_duration)
 
-        if temp_total_duration > MAXIMUM_LEGAL_SHIFT_DURATION or len(schedule) == no_flights: # do not add the new route if it will break time (10 hours = 600 minutes) or flight limits. This allows for ending away from base to simulate layovers
-            logging.info(f"Breaking: Not adding {return_route}")
-            break
+            Session.add(new_schedule)
 
-        total_duration = temp_total_duration
-        schedule += [return_route]
-
-    return schedule
-
-
-def create_point_to_point_schedule(airline_icao: str, origin: str, no_flights: int, min_flight_duration: int, max_flight_duration: int, attempts_remaining: int = 5) -> list[Route]:
-    # ? Make this use a reverse dijkstra to find the best route instead of messy solution - is it really needed, the current systems works well in all tests. This would be more important for simulation in bulk (e.g.: simulating schedules for all pilots in an airline).
-    if attempts_remaining == 0:
-        raise ValueError("Sparse point to point network, borderline impossible to create route")
-
-    schedule: list[Route] = [get_random_route(airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)]
-    total_duration = 0
-
-    while len(schedule) < no_flights - 1 and total_duration < 500: # Check if schedule shorter than desired and pilot is under legal flying hour limit (10 hours) - budgeted for and extra hop and 100 mins to return to base, if this budget is exceeded the law (in the game) is broken. This is messy and ought to be fixed later
-        route: Route = get_random_route(airline_icao=airline_icao, origin=schedule[-1].destination_icao, min_duration=min_flight_duration, max_duration=max_flight_duration)
-        schedule += [route]
-
-    return_to_base = get_route_between_points(airline_icao=airline_icao, origin=schedule[-1].destination_icao, destination=origin)
-    rtb_attempts = 0
-
-    while return_to_base == None and rtb_attempts <= 10:
-        schedule[-1] = get_random_route(airline_icao=airline_icao, origin=schedule[-2].destination_icao, min_duration=min_flight_duration, max_duration=max_flight_duration)
-
-        return_to_base = get_route_between_points(airline_icao=airline_icao, origin=schedule[-1].destination_icao, destination=origin)
-
-        rtb_attempts += 1
-
-    if rtb_attempts == 11: # This would mean that route connection failed - reverts to empty schedule to try again
-        logging.info("Schedule generation failed to link up. Restarting...")
-        schedule = create_point_to_point_schedule(airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration, attempts_remaining=attempts_remaining-1)
-    else:
-        schedule += [return_to_base]
-
-    total_duration = 0
-    for route in schedule:
-        total_duration += route.duration_minutes
-
-    logging.info(f"{total_duration = }")
-
-    if total_duration > MAXIMUM_LEGAL_SHIFT_DURATION:
-        logging.info("Schedule was too long. Restarting ...")
-        schedule = create_point_to_point_schedule(airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration, attempts_remaining=attempts_remaining-1)
-
-    return schedule
+        current_day += 1
