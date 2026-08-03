@@ -2,8 +2,9 @@ import customtkinter
 from ui.active_day_schedule import ActiveDaySchedule
 from utils import validation
 from tkinter import messagebox
-from models import Route
-from scheduling import create_schedule
+from models import Route, Schedule
+from scheduling import create_schedule, get_current_day_schedule, delete_schedules_in_day_range
+import logging
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -86,8 +87,13 @@ class App(customtkinter.CTk):
         min_flight_dur = int(min_flight_dur)
         max_flight_dur = int(max_flight_dur)
 
+        # TEMP: Delete current schedule data - this is only needed until flight tracking and marking flights as complete
+        delete_schedules_in_day_range(start_day=0, end_day=0, career_id=0) # Delete schedule for day_no = 0
+
         try:
-            schedule: list[Route] = create_schedule(airline_icao, origin_icao, no_flights, min_flight_dur, max_flight_dur)
+            create_schedule(career_id=0, airline_icao=airline_icao, origin=origin_icao, no_daily_flights=no_flights, min_flight_duration=min_flight_dur, max_flight_duration=max_flight_dur, no_days=1)
+            print("Schedule successfully created.")
+            schedule: list[Schedule] = get_current_day_schedule(0)
         except Exception as e:
             print(e)
             return self._schedule_fail("Something went wrong generating the schedule.")

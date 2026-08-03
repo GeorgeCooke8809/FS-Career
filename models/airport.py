@@ -7,6 +7,7 @@ from models.base import Base
 
 if TYPE_CHECKING:
     from models.route import Route
+    from models.career import Career
 
 
 class Airport(Base):
@@ -29,6 +30,7 @@ class Airport(Base):
         back_populates="destination",
         foreign_keys="Route.destination_icao",
     )
+    careers: Mapped[list["Career"]] = relationship(back_populates="base")
 
     def __repr__(self) -> str:
         return f"<Airport {self.icao}>"

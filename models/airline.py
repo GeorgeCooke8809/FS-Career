@@ -7,6 +7,7 @@ from models.base import Base
 
 if TYPE_CHECKING:
     from models.route import Route
+    from models.career import Career
 
 NETWORK_MODELS = ("hub_and_spoke", "point_to_point")
 
@@ -30,6 +31,7 @@ class Airline(Base):
     """'hub_and_spoke' or 'point_to_point'; null where not yet researched."""
 
     routes: Mapped[list["Route"]] = relationship(back_populates="airline")
+    careers: Mapped[list["Career"]] = relationship(back_populates="current_airline")
 
     def __repr__(self) -> str:
         return f"<Airline {self.icao}>"
