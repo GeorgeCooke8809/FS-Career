@@ -3,7 +3,9 @@ from models import Route, Schedule
 from PIL import Image
 import sys, os
 import ui.theme as theme
-from datetime import timedelta, time, datetime
+from datetime import timedelta, time, datetime, timezone
+from zoneinfo import ZoneInfo
+from utils import timezones
 
 class RouteWidget(customtkinter.CTkFrame):
     def __init__(self, parent, schedule: Schedule, flight_status: str, height: int = 90):
@@ -49,19 +51,24 @@ class RouteContent(customtkinter.CTkFrame):
         hours = route.duration_minutes // 60
         minutes = route.duration_minutes % 60
 
-        departure_time_utc = schedule.departure_time_utc
-        arrival_time_utc = (datetime.combine(datetime.min, departure_time_utc) + timedelta(minutes=route.duration_minutes)).time()
+        anchor_date = datetime.now(timezone.utc)
 
-        # TODO: Convert to local times too.
-        departure_time_utc
+        departure_datetime_utc = anchor_date.replace(hour=schedule.departure_time_utc.hour, minute=schedule.departure_time_utc.minute)
+        arrival_datetime_utc = departure_datetime_utc + timedelta(minutes=route.duration_minutes)
+
+        departure_timezone: ZoneInfo = timezones.get_airport_timezone(route.origin_icao)
+        destination_timezone: ZoneInfo = timezones.get_airport_timezone(route.destination_icao)
+
+        departure_datetime_local = departure_datetime_utc.astimezone(departure_timezone)
+        arrival_datetime_local = arrival_datetime_utc.astimezone(destination_timezone)
 
         script_dir = sys.path[0]
         aircraft_logo_dir = os.path.join(script_dir, ".\\src\\aircraft_icon.png")
 
         # TOP ROW
-        self.departure_local = customtkinter.CTkLabel(self, text="PLACE", font=theme.Fonts.route_card_subheader())
+        self.departure_local = customtkinter.CTkLabel(self, text=f"{departure_datetime_local.strftime("%H:%M")} local", font=theme.Fonts.route_card_subheader())
         self.flight_duration = customtkinter.CTkLabel(self, text=f"{hours:02}:{minutes:02}", font=theme.Fonts.route_card_subheader(), text_color=theme.Colours.ROUTE_CARD_ON_TIME_FONT) # TODO: Make this reflect the simulator time compared to departure time - waiting for simulator sync
-        self.arrival_local = customtkinter.CTkLabel(self, text="PLACE", font=theme.Fonts.route_card_subheader())
+        self.arrival_local = customtkinter.CTkLabel(self, text=f"{arrival_datetime_local.strftime("%H:%M")} local", font=theme.Fonts.route_card_subheader())
 
         # MIDDLE ROW
         self.departure_icao = customtkinter.CTkLabel(self, text=route.origin_icao, font=theme.Fonts.route_card_airport_icao())
@@ -72,9 +79,9 @@ class RouteContent(customtkinter.CTkFrame):
         self.arrival_icao = customtkinter.CTkLabel(self, text=route.destination_icao, font=theme.Fonts.route_card_airport_icao())
 
         # BOTTOM ROW
-        self.departure_utc = customtkinter.CTkLabel(self, text=f"{departure_time_utc.strftime("%H:%M")} UTC", font=theme.Fonts.route_card_subheader())
+        self.departure_utc = customtkinter.CTkLabel(self, text=f"{departure_datetime_utc.strftime("%H:%M")} UTC", font=theme.Fonts.route_card_subheader())
         self.callsign = customtkinter.CTkLabel(self, text=f"{route.airline_icao}{route.flight_number}", font=theme.Fonts.route_card_subheader())
-        self.arrival_utc = customtkinter.CTkLabel(self, text=f"{arrival_time_utc.strftime("%H:%M")} UTC", font=theme.Fonts.route_card_subheader())
+        self.arrival_utc = customtkinter.CTkLabel(self, text=f"{arrival_datetime_utc.strftime("%H:%M")} UTC", font=theme.Fonts.route_card_subheader())
 
         self._draw_widgets()
 
