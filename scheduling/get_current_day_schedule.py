@@ -1,4 +1,4 @@
-from models import Schedule, Career
+from models import Schedule, Career, Route
 from models.base import with_session
 
 from sqlalchemy.orm import Session, joinedload
@@ -13,7 +13,10 @@ def get_current_day_schedule(Session: Session, career_id: int) -> list[Schedule]
 
     return (
         Session.query(Schedule)
-        .options(joinedload(Schedule.route))
+        .options(
+            joinedload(Schedule.route).joinedload(Route.origin),
+            joinedload(Schedule.route).joinedload(Route.destination),
+        )
         .filter(Schedule.career_id == career_id)
         .filter(Schedule.day_no == current_day)
         .order_by(Schedule.flight_index.asc())
