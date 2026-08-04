@@ -1,5 +1,6 @@
 import customtkinter
 from ui.active_day_schedule import ActiveDaySchedule
+from ui.map_widget import ScheduleMap
 from utils import validation
 from tkinter import messagebox
 from models import Route, Schedule
@@ -10,8 +11,8 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("500x750")
-        self.minsize(500, 750)
+        self.geometry("1000x750")
+        self.minsize(1000, 750)
         self.title("Random Flight Schedule Generator")
 
         self._create_widgets()
@@ -31,6 +32,8 @@ class App(customtkinter.CTk):
 
         self.content = ActiveDaySchedule(self, schedule=[])
 
+        self.schedule_map = ScheduleMap(self, schedules=[])
+
         self._draw_widgets()
 
     def _draw_widgets(self):
@@ -38,6 +41,7 @@ class App(customtkinter.CTk):
         self.rowconfigure(4, weight=10_000)
 
         self.columnconfigure((0,1), weight=1)
+        self.columnconfigure(2, weight=5)
 
 
         self.airline_entry.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=5, pady=2.5)
@@ -51,6 +55,8 @@ class App(customtkinter.CTk):
         self.generate_schedule_button.grid(row=3, column=0, columnspan=2, sticky="nsew", padx=5, pady=2.5)
 
         self.content.grid(row=4, column=0, columnspan=2, sticky="nsew")
+
+        self.schedule_map.grid(row=0, column=2, rowspan=5, sticky="nsew")
 
     def _schedule_fail(self, message: str) -> None:
         messagebox.showerror("Schedule Error", message)
@@ -104,4 +110,7 @@ class App(customtkinter.CTk):
         print(schedule)
 
         self.content = ActiveDaySchedule(self, schedule=schedule)
+        self.schedule_map = ScheduleMap(self, schedules=schedule)
+        
         self.content.grid(row=4, column=0, columnspan=2, sticky="nsew")
+        self.schedule_map.grid(row=0, column=2, rowspan=5, sticky="nsew")
