@@ -12,7 +12,7 @@ class ActiveDaySchedule(customtkinter.CTkScrollableFrame):
         self.widgets: list[customtkinter.CTkFrame] = []
 
         for route in schedules:
-            self.widgets.append(RouteWidget(self, route, "current"))
+            self.widgets.append(RouteWidget(self, route))
 
         self._draw_widgets()
 

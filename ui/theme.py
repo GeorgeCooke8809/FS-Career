@@ -3,7 +3,7 @@ import customtkinter
 class Colours:
     ROUTE_CARD_COMPLETED_SIDE = "#b9b9b9"
     ROUTE_CARD_CURRENT_SIDE = "#21c73d"
-    ROUTE_CARD_FUTURE_SIDE = "#3769d6"
+    ROUTE_CARD_FUTURE_SIDE = "#0062e2"
 
     ROUTE_CARD_ON_TIME_FONT = "#21c73d"
 

@@ -8,18 +8,18 @@ from zoneinfo import ZoneInfo
 from utils import timezones
 
 class RouteWidget(customtkinter.CTkFrame):
-    def __init__(self, parent, schedule: Schedule, flight_status: str, height: int = 90):
+    def __init__(self, parent, schedule: Schedule, height: int = 90):
         super().__init__(parent, corner_radius=0, height=height)
         self.grid_propagate(False)
 
-        self._create_widgets(schedule, flight_status, height)
+        self._create_widgets(schedule, height)
 
-    def _create_widgets(self, schedule: Schedule, flight_status: str, height: int):
-        if flight_status == "completed":
+    def _create_widgets(self, schedule: Schedule, height: int):
+        if schedule.status == "completed":
             side_colour = theme.Colours.ROUTE_CARD_COMPLETED_SIDE
-        elif flight_status == "current":
+        elif schedule.status == "current":
             side_colour = theme.Colours.ROUTE_CARD_CURRENT_SIDE
-        elif flight_status == "future":
+        elif schedule.status == "future":
             side_colour = theme.Colours.ROUTE_CARD_FUTURE_SIDE
 
         self.left_colour = customtkinter.CTkFrame(self, fg_color=side_colour, width=5, corner_radius=0)
