@@ -5,7 +5,8 @@ from utils import validation
 from tkinter import messagebox
 from models import Route, Schedule
 from scheduling import create_schedule, get_current_day_schedule, delete_schedules_in_day_range
-import logging
+import logging, os, sys
+from tkintermapview import offline_loading 
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -111,6 +112,6 @@ class App(customtkinter.CTk):
 
         self.content = ActiveDaySchedule(self, schedule=schedule)
         self.schedule_map = ScheduleMap(self, schedules=schedule)
-        
+
         self.content.grid(row=4, column=0, columnspan=2, sticky="nsew")
         self.schedule_map.grid(row=0, column=2, rowspan=5, sticky="nsew")
