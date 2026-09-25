@@ -1,5 +1,5 @@
 import customtkinter
-from models import Route, Schedule
+from models import Route, Schedule, Aircraft
 from PIL import Image
 import sys, os
 import ui.theme as theme
@@ -16,7 +16,23 @@ class RouteWidget(customtkinter.CTkFrame):
         self._create_widgets(schedule, height)
 
         if schedule.status == "current":
-            self._bind_click_recursive(self, lambda _ : open("https://google.com"))
+            route = schedule.route
+            
+            airline = route.airline
+            airline_iata = airline.iata
+            flight_no = route.flight_number
+            aircraft = route.aircraft
+            aircraft_type = aircraft.icao_type
+            origin = route.origin_icao
+            destination = route.destination_icao
+    
+            departure_time = schedule.departure_time_utc
+            departure_hour = departure_time.strftime("%H")
+            departure_minute = departure_time.strftime("%M")
+    
+            simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_iata}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
+            
+            self._bind_click_recursive(self, lambda _ : open(simbrief_link))
 
     def _create_widgets(self, schedule: Schedule, height: int):
         if schedule.status == "completed":

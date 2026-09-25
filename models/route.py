@@ -44,8 +44,8 @@ class Route(Base):
     schedule_synthetic: Mapped[bool] = mapped_column(Boolean, default=True, server_default="1")
     aircraft_icao_type_synthetic: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
 
-    airline: Mapped["Airline"] = relationship(back_populates="routes")
-    aircraft: Mapped["Aircraft"] = relationship(back_populates="routes")
+    airline: Mapped["Airline"] = relationship(back_populates="routes", lazy = "joined")
+    aircraft: Mapped["Aircraft"] = relationship(back_populates="routes", lazy = "joined")
     origin: Mapped["Airport"] = relationship(
         back_populates="departures", foreign_keys=[origin_icao]
     )
