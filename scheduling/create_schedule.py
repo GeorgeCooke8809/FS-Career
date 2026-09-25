@@ -38,9 +38,7 @@ def create_schedule(Session: Session, career_id: int, airline_icao: str, origin:
         day_origin = day_schedules[-1][-1].destination_icao
         day_schedules += [create_day_schedule(airline_icao=airline_icao, origin=day_origin, no_flights=no_daily_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)]
 
-    first_day = True
-
-    for day in day_schedules:
+    for i, day in enumerate(day_schedules):
         random_hour = randint(0, 23)
         random_minute = 5 * randint(0, 11) # Minute of schedule start rounded to nearest 5 mins
         next_flight_start = datetime.min.replace(hour=random_hour, minute=random_minute) # generate departure time of first flight in day schedule on the minimum possible date value
@@ -50,10 +48,8 @@ def create_schedule(Session: Session, career_id: int, airline_icao: str, origin:
         for route in day:
             flight_index += 1
 
-            if first_day == True and flight_index == 0:
-                 status = "current"
-            else:
-                 status = "future"
+            if i == 0 and flight_index == 0: status = "current"
+            else: status = "future"
 
             new_schedule = Schedule(day_no=current_day, flight_index=flight_index, route=route, departure_time_utc=next_flight_start.time(), status=status, career_id=career_id)
 
@@ -62,5 +58,4 @@ def create_schedule(Session: Session, career_id: int, airline_icao: str, origin:
 
             Session.add(new_schedule)
 
-        first_day = False
         current_day += 1
