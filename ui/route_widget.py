@@ -6,6 +6,7 @@ import ui.theme as theme
 from datetime import timedelta, time, datetime, timezone
 from zoneinfo import ZoneInfo
 from utils import timezones
+from webbrowser import open
 
 class RouteWidget(customtkinter.CTkFrame):
     def __init__(self, parent, schedule: Schedule, height: int = 90):
@@ -14,11 +15,15 @@ class RouteWidget(customtkinter.CTkFrame):
 
         self._create_widgets(schedule, height)
 
+        if schedule.status == "current":
+            self._bind_click_recursive(self, lambda _ : open("https://google.com"))
+
     def _create_widgets(self, schedule: Schedule, height: int):
         if schedule.status == "completed":
             side_colour = theme.Colours.ROUTE_CARD_COMPLETED_SIDE
         elif schedule.status == "current":
             side_colour = theme.Colours.ROUTE_CARD_CURRENT_SIDE
+
         elif schedule.status == "future":
             side_colour = theme.Colours.ROUTE_CARD_FUTURE_SIDE
 
@@ -38,6 +43,13 @@ class RouteWidget(customtkinter.CTkFrame):
         self.left_colour.grid(row=0, column=0, sticky="nsew")
         self.content.grid(row=0, column=1, sticky="nsew")
         self.right_colour.grid(row=0, column=2, sticky="nsew")
+
+    def _bind_click_recursive(self, widget, function):
+        widget.bind("<Button-1>", function)
+        widget.configure(cursor="hand2")
+
+        for child in widget.winfo_children():
+            self._bind_click_recursive(child, function)
 
 class RouteContent(customtkinter.CTkFrame):
     # TODO: Fix: Sometimes different ICAO codes take up different widths and shift the plane icon
