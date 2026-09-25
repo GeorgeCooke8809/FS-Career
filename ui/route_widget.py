@@ -1,11 +1,12 @@
 import customtkinter
-from models import Route, Schedule
+from models import Route, Schedule, Aircraft
 from PIL import Image
 import sys, os
 import ui.theme as theme
 from datetime import timedelta, time, datetime, timezone
 from zoneinfo import ZoneInfo
 from utils import timezones
+from webbrowser import open
 
 class RouteWidget(customtkinter.CTkFrame):
     def __init__(self, parent, schedule: Schedule, height: int = 90):
@@ -14,11 +15,32 @@ class RouteWidget(customtkinter.CTkFrame):
 
         self._create_widgets(schedule, height)
 
+        if schedule.status == "current": # If current route, click to redirect to SimBrief
+            # TODO: Move this to new page when making flight tracking
+            route = schedule.route
+            
+            airline = route.airline
+            airline_iata = airline.iata
+            flight_no = route.flight_number
+            aircraft = route.aircraft
+            aircraft_type = aircraft.icao_type
+            origin = route.origin_icao
+            destination = route.destination_icao
+    
+            departure_time = schedule.departure_time_utc
+            departure_hour = departure_time.strftime("%H")
+            departure_minute = departure_time.strftime("%M")
+    
+            simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_iata}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
+            
+            self._bind_click_recursive(self, lambda _ : open(simbrief_link))
+
     def _create_widgets(self, schedule: Schedule, height: int):
         if schedule.status == "completed":
             side_colour = theme.Colours.ROUTE_CARD_COMPLETED_SIDE
         elif schedule.status == "current":
             side_colour = theme.Colours.ROUTE_CARD_CURRENT_SIDE
+
         elif schedule.status == "future":
             side_colour = theme.Colours.ROUTE_CARD_FUTURE_SIDE
 
@@ -38,6 +60,14 @@ class RouteWidget(customtkinter.CTkFrame):
         self.left_colour.grid(row=0, column=0, sticky="nsew")
         self.content.grid(row=0, column=1, sticky="nsew")
         self.right_colour.grid(row=0, column=2, sticky="nsew")
+
+    def _bind_click_recursive(self, widget, function):
+        # TODO: This can be removed when redirect to SimBrief is moved to another page
+        widget.bind("<Button-1>", function)
+        widget.configure(cursor="hand2")
+
+        for child in widget.winfo_children():
+            self._bind_click_recursive(child, function)
 
 class RouteContent(customtkinter.CTkFrame):
     # TODO: Fix: Sometimes different ICAO codes take up different widths and shift the plane icon

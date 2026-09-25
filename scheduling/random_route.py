@@ -2,7 +2,6 @@ from models.route import Route
 from models.base import with_session
 from sqlalchemy.sql.expression import func
 
-@with_session
 def get_random_route(Session, airline_icao: str, origin: str, max_duration: int, min_duration: int) -> Route:
     """Gets and returns the route object of a random flight for the airline from the given base
 

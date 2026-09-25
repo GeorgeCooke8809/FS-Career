@@ -23,25 +23,25 @@ def create_day_schedule(Session, airline_icao: str, origin: str, no_flights: int
 
     if no_flights == 1:
         logging.info(f"Getting random route for single flight schedule")
-        return [get_random_route(airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)]
+        return [get_random_route(Session=Session, airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)]
     elif airline.network_model == "hub_and_spoke" or no_flights == 2:
         logging.info(f"Using hub and spoke model for {airline_icao} with {no_flights} flights")
-        return create_hub_and_spoke_schedule(airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)
+        return create_hub_and_spoke_schedule(Session, airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)
     elif airline.network_model == "point_to_point":
         logging.info(f"Using point to point model for {airline_icao}")
-        return create_point_to_point_schedule(airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)
+        return create_point_to_point_schedule(Session, airline_icao, origin, no_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)
     elif airline.network_model == None:
         raise ValueError("Airline has not been assigned network_model")
     else:
         raise ValueError(f"Invalid network_model in database: {airline.network_model} for {airline.icao}")
 
 
-def create_hub_and_spoke_schedule(airline_icao: str, origin: str, no_flights: int, min_flight_duration: int, max_flight_duration: int) -> list[Route]:
+def create_hub_and_spoke_schedule(Session, airline_icao: str, origin: str, no_flights: int, min_flight_duration: int, max_flight_duration: int) -> list[Route]:
     schedule = []
     total_duration = 0
 
     while len(schedule) < no_flights and total_duration < MAXIMUM_LEGAL_SHIFT_DURATION: # Check if schedule shorter than desired and pilot is under legal flying hour limit (10 hours)
-        outbound_route: Route = get_random_route(airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)
+        outbound_route: Route = get_random_route(Session=Session, airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)
         temp_total_duration = total_duration + outbound_route.duration_minutes
 
         if temp_total_duration > MAXIMUM_LEGAL_SHIFT_DURATION and len(schedule) > 0: # do not add the new route if it will break time limits (10 hours = 600 minutes) unless it is the first route
@@ -51,7 +51,7 @@ def create_hub_and_spoke_schedule(airline_icao: str, origin: str, no_flights: in
         total_duration = temp_total_duration
         schedule += [outbound_route]
 
-        return_route: Route = get_route_between_points(airline_icao=airline_icao, origin=outbound_route.destination_icao, destination=origin) # database is guarded in the hub and spoke model so that this will never return none
+        return_route: Route = get_route_between_points(Session=Session, airline_icao=airline_icao, origin=outbound_route.destination_icao, destination=origin) # database is guarded in the hub and spoke model so that this will never return none
 
         if return_route == None:
             raise ValueError("Return route returned none - this likely indicates a corrupted hub and spoke model airline in the database")
@@ -68,25 +68,25 @@ def create_hub_and_spoke_schedule(airline_icao: str, origin: str, no_flights: in
     return schedule
 
 
-def create_point_to_point_schedule(airline_icao: str, origin: str, no_flights: int, min_flight_duration: int, max_flight_duration: int, attempts_remaining: int = 5) -> list[Route]:
+def create_point_to_point_schedule(Session, airline_icao: str, origin: str, no_flights: int, min_flight_duration: int, max_flight_duration: int, attempts_remaining: int = 5) -> list[Route]:
     # ? Make this use a reverse dijkstra to find the best route instead of messy solution - is it really needed, the current systems works well in all tests. This would be more important for simulation in bulk (e.g.: simulating schedules for all pilots in an airline).
     if attempts_remaining == 0:
         raise ValueError("Sparse point to point network, borderline impossible to create route")
 
-    schedule: list[Route] = [get_random_route(airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)]
+    schedule: list[Route] = [get_random_route(Session=Session, airline_icao=airline_icao, origin=origin, min_duration=min_flight_duration, max_duration=max_flight_duration)]
     total_duration = 0
 
     while len(schedule) < no_flights - 1 and total_duration < 500: # Check if schedule shorter than desired and pilot is under legal flying hour limit (10 hours) - budgeted for and extra hop and 100 mins to return to base, if this budget is exceeded the law (in the game) is broken. This is messy and ought to be fixed later
-        route: Route = get_random_route(airline_icao=airline_icao, origin=schedule[-1].destination_icao, min_duration=min_flight_duration, max_duration=max_flight_duration)
+        route: Route = get_random_route(Session=Session, airline_icao=airline_icao, origin=schedule[-1].destination_icao, min_duration=min_flight_duration, max_duration=max_flight_duration)
         schedule += [route]
 
     return_to_base = get_route_between_points(airline_icao=airline_icao, origin=schedule[-1].destination_icao, destination=origin)
     rtb_attempts = 0
 
     while return_to_base == None and rtb_attempts <= 10:
-        schedule[-1] = get_random_route(airline_icao=airline_icao, origin=schedule[-2].destination_icao, min_duration=min_flight_duration, max_duration=max_flight_duration)
+        schedule[-1] = get_random_route(Session=Session, airline_icao=airline_icao, origin=schedule[-2].destination_icao, min_duration=min_flight_duration, max_duration=max_flight_duration)
 
-        return_to_base = get_route_between_points(airline_icao=airline_icao, origin=schedule[-1].destination_icao, destination=origin)
+        return_to_base = get_route_between_points(Session=Session, airline_icao=airline_icao, origin=schedule[-1].destination_icao, destination=origin)
 
         rtb_attempts += 1
 
