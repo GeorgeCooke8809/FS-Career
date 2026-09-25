@@ -8,12 +8,6 @@ Candidate XYZ tile providers for `tkintermapview`'s `set_tile_server()`, all usa
 - Tile server pattern: `https://a.tile.openstreetmap.org/{z}/{x}/{y}.png`
 - Note: usage policy asks for light/reasonable use; heavy local caching should ideally go through a mirror or self-hosted setup — see https://operations.osmfoundation.org/policies/tiles/
 
-## CartoDB / Carto Basemaps
-- Live demo (style picker for Positron/Voyager/Dark Matter): https://carto.com/basemaps
-- Positron (light, minimal) sample tile: https://basemaps.cartocdn.com/light_all/5/16/10.png
-- Dark Matter (dark) sample tile: https://basemaps.cartocdn.com/dark_all/5/16/10.png
-- Voyager (color, labeled) sample tile: https://basemaps.cartocdn.com/rastertiles/voyager/5/16/10.png
-- Tile server pattern: `https://basemaps.cartocdn.com/{style}/{z}/{x}/{y}.png`
 
 ## Esri (ArcGIS Online basemaps)
 - Service directory: https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer

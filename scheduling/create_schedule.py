@@ -38,6 +38,8 @@ def create_schedule(Session: Session, career_id: int, airline_icao: str, origin:
         day_origin = day_schedules[-1][-1].destination_icao
         day_schedules += [create_day_schedule(airline_icao=airline_icao, origin=day_origin, no_flights=no_daily_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)]
 
+    first_day = True
+
     for day in day_schedules:
         random_hour = randint(0, 23)
         random_minute = 5 * randint(0, 11) # Minute of schedule start rounded to nearest 5 mins
@@ -48,11 +50,17 @@ def create_schedule(Session: Session, career_id: int, airline_icao: str, origin:
         for route in day:
             flight_index += 1
 
-            new_schedule = Schedule(day_no=current_day, flight_index=flight_index, route=route, departure_time_utc=next_flight_start.time(), status="future", career_id=career_id)
+            if first_day == True and flight_index == 0:
+                 status = "current"
+            else:
+                 status = "future"
+
+            new_schedule = Schedule(day_no=current_day, flight_index=flight_index, route=route, departure_time_utc=next_flight_start.time(), status=status, career_id=career_id)
 
             layover_duration = max(min_layover_duration, min(5 * round(randint(min_layover_duration, max_layover_duration + 1) / 5), max_layover_duration)) # random layover duration rounded to nearest 5 minutes kept within bounds of min/max
             next_flight_start += timedelta(minutes=route.duration_minutes + layover_duration)
 
             Session.add(new_schedule)
 
+        first_day = False
         current_day += 1

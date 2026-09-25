@@ -9,7 +9,7 @@ class ScheduleMap(tkintermapview.TkinterMapView):
         super().__init__(parent, corner_radius=0) # ? May need to add width and height?
 
         self.canvas.configure(bg="#262626") # Changes the background of the map to the same colour as the sea
-        self.set_tile_server("https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png")
+        self.set_tile_server("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}")
 
         self._create_widgets(schedules)
 

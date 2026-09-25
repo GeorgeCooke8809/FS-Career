@@ -1,4 +1,6 @@
 {
   "todos": [],
-  "excludedPaths": []
+  "excludedPaths": [
+    ".venv"
+  ]
 }
