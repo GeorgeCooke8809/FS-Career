@@ -15,7 +15,8 @@ class RouteWidget(customtkinter.CTkFrame):
 
         self._create_widgets(schedule, height)
 
-        if schedule.status == "current":
+        if schedule.status == "current": # If current route, click to redirect to SimBrief
+            # TODO: Move this to new page when making flight tracking
             route = schedule.route
             
             airline = route.airline
@@ -61,6 +62,7 @@ class RouteWidget(customtkinter.CTkFrame):
         self.right_colour.grid(row=0, column=2, sticky="nsew")
 
     def _bind_click_recursive(self, widget, function):
+        # TODO: This can be removed when redirect to SimBrief is moved to another page
         widget.bind("<Button-1>", function)
         widget.configure(cursor="hand2")
 
