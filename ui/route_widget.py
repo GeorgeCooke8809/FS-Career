@@ -20,7 +20,7 @@ class RouteWidget(customtkinter.CTkFrame):
             route = schedule.route
             
             airline = route.airline
-            airline_iata = airline.iata
+            airline_icao = airline.icao
             flight_no = route.flight_number
             aircraft = route.aircraft
             aircraft_type = aircraft.icao_type
@@ -31,7 +31,7 @@ class RouteWidget(customtkinter.CTkFrame):
             departure_hour = departure_time.strftime("%H")
             departure_minute = departure_time.strftime("%M")
     
-            simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_iata}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
+            simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_icao}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
             
             self._bind_click_recursive(self, lambda _ : open(simbrief_link))
 
