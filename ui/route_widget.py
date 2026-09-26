@@ -33,7 +33,7 @@ class RouteWidget(customtkinter.CTkFrame):
     
             simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_icao}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
             
-            self._bind_click_recursive(self, lambda _ : open(simbrief_link))
+            self._bind_click_recursive(self, lambda _ : open(simbrief_link)) # TODO: Add right click function here
 
     def _create_widgets(self, schedule: Schedule, height: int):
         if schedule.status == "completed":
@@ -61,13 +61,14 @@ class RouteWidget(customtkinter.CTkFrame):
         self.content.grid(row=0, column=1, sticky="nsew")
         self.right_colour.grid(row=0, column=2, sticky="nsew")
 
-    def _bind_click_recursive(self, widget, function):
+    def _bind_click_recursive(self, widget, left_function, right_function = lambda _ : print("Right click function not implemented")):
         # TODO: This can be removed when redirect to SimBrief is moved to another page
-        widget.bind("<Button-1>", function)
+        widget.bind("<Button-1>", left_function)
+        widget.bind("<Button-3>", right_function)
         widget.configure(cursor="hand2")
 
         for child in widget.winfo_children():
-            self._bind_click_recursive(child, function)
+            self._bind_click_recursive(child, left_function, right_function)
 
 class RouteContent(customtkinter.CTkFrame):
     # TODO: Fix: Sometimes different ICAO codes take up different widths and shift the plane icon
