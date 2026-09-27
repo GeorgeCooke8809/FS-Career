@@ -1,5 +1,6 @@
 import customtkinter
 from models import Route, Schedule, Aircraft
+from scheduling import mark_flight_complete
 from PIL import Image
 import sys, os
 import ui.theme as theme
@@ -33,7 +34,7 @@ class RouteWidget(customtkinter.CTkFrame):
     
             simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_icao}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
             
-            self._bind_click_recursive(self, lambda _ : open(simbrief_link)) # TODO: Add right click function here
+            self._bind_click_recursive(self, lambda _ : open(simbrief_link), lambda _ : mark_flight_complete(schedule)) # TODO: Add right click function here
 
     def _create_widgets(self, schedule: Schedule, height: int):
         if schedule.status == "completed":
