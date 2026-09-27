@@ -31,9 +31,13 @@ class App(customtkinter.CTk):
 
         self.generate_schedule_button = customtkinter.CTkButton(self, text="Generate Schedule", command=self._generate_schedule_click)
 
-        self.content = ActiveDaySchedule(self, schedule=[])
+        schedules: list[Schedule] = get_current_day_schedule(0)
 
-        self.schedule_map = ScheduleMap(self, schedules=[])
+        if schedules is None:
+            print("No current schedule was found.")
+
+        self.content = ActiveDaySchedule(self, schedule=schedules)
+        self.schedule_map = ScheduleMap(self, schedules=schedules)
 
         self._draw_widgets()
 
