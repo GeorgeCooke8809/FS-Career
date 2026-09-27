@@ -98,9 +98,6 @@ class App(customtkinter.CTk):
         min_flight_dur = int(min_flight_dur)
         max_flight_dur = int(max_flight_dur)
 
-        # TEMP: Delete current schedule data - this is only needed until flight tracking and marking flights as complete
-        delete_schedules_in_day_range(start_day=0, end_day=0, career_id=0) # Delete schedule for day_no = 0
-
         try:
             create_schedule(career_id=0, airline_icao=airline_icao, origin=origin_icao, no_daily_flights=no_flights, min_flight_duration=min_flight_dur, max_flight_duration=max_flight_dur, no_days=1)
             print("Schedule successfully created.")

@@ -1,4 +1,5 @@
 from models.schedule import Schedule
+from models.career import Career
 from models.base import with_session
 
 from sqlalchemy.orm import Session
@@ -17,6 +18,9 @@ def mark_flight_complete(Session: Session, schedule: Schedule) -> None:
     next_schedule = Session.query(Schedule).filter(Schedule.day_no == schedule.day_no).filter(Schedule.flight_index == schedule.flight_index + 1).first()
     if next_schedule == None:
         print("Completed schedule was the last of the day")
+        
+        career = Session.query(Career).filter(Career.id == schedule.career_id).first()
+        career.current_day += 1
 
         next_schedule = Session.query(Schedule).filter(Schedule.day_no == schedule.day_no + 1).filter(Schedule.flight_index == 0).first()
 
