@@ -99,12 +99,16 @@ class App(customtkinter.CTk):
         max_flight_dur = int(max_flight_dur)
 
         try:
-            create_schedule(career_id=0, airline_icao=airline_icao, origin=origin_icao, no_daily_flights=no_flights, min_flight_duration=min_flight_dur, max_flight_duration=max_flight_dur, no_days=1)
+            specific_error = create_schedule(career_id=0, airline_icao=airline_icao, origin=origin_icao, no_daily_flights=no_flights, min_flight_duration=min_flight_dur, max_flight_duration=max_flight_dur, no_days=1)
+            
+            if specific_error != None: return self._schedule_fail(specific_error)
+
             print("Schedule successfully created.")
-            schedules: list[Schedule] = get_current_day_schedule(0)
         except Exception as e:
             print(e)
             return self._schedule_fail("Something went wrong generating the schedule.")
+
+        schedules: list[Schedule] = get_current_day_schedule(0)
 
         if schedules is None:
             return self._schedule_fail("Something went wrong collecting the schedule.")

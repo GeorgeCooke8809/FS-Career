@@ -29,10 +29,8 @@ def create_schedule(Session: Session, career_id: int, airline_icao: str, origin:
     if current_max_schedule == None: current_max_schedule = -1 # Edge case for if no schedule has been created in career
     else: current_max_schedule = current_max_schedule[0]
 
-    print(f"{current_day = }, {current_max_schedule = }")
-
     if current_day <= current_max_schedule: # This will mean that the date will have to be incremented BEFORE the creation of a new schedule when career is implemented
-        raise ValueError("Cannot make new schedule, the old schedule has not yet been completed!")
+        return "Cannot make new schedule, the old schedule has not yet been completed!"
 
     day_schedules: list[list[Route]] = [create_day_schedule(airline_icao=airline_icao, origin=origin, no_flights=no_daily_flights, min_flight_duration=min_flight_duration, max_flight_duration=max_flight_duration)] # A 2D array of all day schedules created.
 
