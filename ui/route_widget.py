@@ -62,7 +62,7 @@ class RouteWidget(customtkinter.CTkFrame):
         self.content.grid(row=0, column=1, sticky="nsew")
         self.right_colour.grid(row=0, column=2, sticky="nsew")
 
-    def _bind_click_recursive(self, widget, left_function, right_function = lambda _ : print("Right click function not implemented")):
+    def _bind_click_recursive(self, widget, left_function, right_function):
         # TODO: This can be removed when redirect to SimBrief is moved to another page
         widget.bind("<Button-1>", left_function)
         widget.bind("<Button-3>", right_function)
