@@ -21,7 +21,7 @@ class ScheduleMap(tkintermapview.TkinterMapView):
         for schedule in schedules:
             route_markers = []
 
-            if schedule.status == "complete":
+            if schedule.status == "completed":
                 route_colour = theme.Colours.ROUTE_CARD_COMPLETED_SIDE
             elif schedule.status == "current":
                 route_colour = theme.Colours.ROUTE_CARD_CURRENT_SIDE

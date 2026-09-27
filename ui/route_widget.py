@@ -10,7 +10,7 @@ from utils import timezones
 from webbrowser import open
 
 class RouteWidget(customtkinter.CTkFrame):
-    def __init__(self, parent, schedule: Schedule, height: int = 90):
+    def __init__(self, parent, app, schedule: Schedule, height: int = 90):
         super().__init__(parent, corner_radius=0, height=height)
         self.grid_propagate(False)
 
@@ -34,7 +34,7 @@ class RouteWidget(customtkinter.CTkFrame):
     
             simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_icao}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
             
-            self._bind_click_recursive(self, lambda _ : open(simbrief_link), lambda _ : mark_flight_complete(schedule)) # TODO: Add right click function here
+            self._bind_click_recursive(self, lambda _ : open(simbrief_link), lambda _ : self._mark_flight_complete(schedule, app))
 
     def _create_widgets(self, schedule: Schedule, height: int):
         if schedule.status == "completed":
@@ -70,6 +70,11 @@ class RouteWidget(customtkinter.CTkFrame):
 
         for child in widget.winfo_children():
             self._bind_click_recursive(child, left_function, right_function)
+
+    def _mark_flight_complete(self, schedule: Schedule, app) -> None:
+            mark_flight_complete(schedule) # TODO: This should be removed once live flight tracking is implemented
+    
+            app.rerender_content_map()
 
 class RouteContent(customtkinter.CTkFrame):
     # TODO: Fix: Sometimes different ICAO codes take up different widths and shift the plane icon
