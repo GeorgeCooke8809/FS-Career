@@ -1,5 +1,6 @@
 import customtkinter
 from models import Route, Schedule, Aircraft
+from scheduling import mark_flight_complete
 from PIL import Image
 import sys, os
 import ui.theme as theme
@@ -9,7 +10,7 @@ from utils import timezones
 from webbrowser import open
 
 class RouteWidget(customtkinter.CTkFrame):
-    def __init__(self, parent, schedule: Schedule, height: int = 90):
+    def __init__(self, parent, app, schedule: Schedule, height: int = 90):
         super().__init__(parent, corner_radius=0, height=height)
         self.grid_propagate(False)
 
@@ -33,7 +34,7 @@ class RouteWidget(customtkinter.CTkFrame):
     
             simbrief_link = f"https://dispatch.simbrief.com/options/custom?airline={airline_icao}&fltnum={flight_no}&type={aircraft_type}&orig={origin}&dest={destination}&deph={departure_hour}&depm={departure_minute}"
             
-            self._bind_click_recursive(self, lambda _ : open(simbrief_link))
+            self._bind_click_recursive(self, lambda _ : open(simbrief_link), lambda _ : self._mark_flight_complete(schedule, app))
 
     def _create_widgets(self, schedule: Schedule, height: int):
         if schedule.status == "completed":
@@ -61,13 +62,19 @@ class RouteWidget(customtkinter.CTkFrame):
         self.content.grid(row=0, column=1, sticky="nsew")
         self.right_colour.grid(row=0, column=2, sticky="nsew")
 
-    def _bind_click_recursive(self, widget, function):
+    def _bind_click_recursive(self, widget, left_function, right_function):
         # TODO: This can be removed when redirect to SimBrief is moved to another page
-        widget.bind("<Button-1>", function)
+        widget.bind("<Button-1>", left_function)
+        widget.bind("<Button-3>", right_function)
         widget.configure(cursor="hand2")
 
         for child in widget.winfo_children():
-            self._bind_click_recursive(child, function)
+            self._bind_click_recursive(child, left_function, right_function)
+
+    def _mark_flight_complete(self, schedule: Schedule, app) -> None:
+            mark_flight_complete(schedule) # TODO: This should be removed once live flight tracking is implemented
+    
+            app.rerender_content_map()
 
 class RouteContent(customtkinter.CTkFrame):
     # TODO: Fix: Sometimes different ICAO codes take up different widths and shift the plane icon

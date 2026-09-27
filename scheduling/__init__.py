@@ -15,3 +15,4 @@ from scheduling.generate_schedule import create_day_schedule
 from scheduling.create_schedule import create_schedule
 from scheduling.get_current_day_schedule import get_current_day_schedule
 from scheduling.delete_schedules_in_day_range import delete_schedules_in_day_range
+from scheduling.mark_complete import mark_flight_complete

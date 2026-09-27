@@ -6,13 +6,13 @@ class ActiveDaySchedule(customtkinter.CTkScrollableFrame):
     def __init__(self, parent, schedule: list[Route]):
         super().__init__(parent)
 
-        self._create_widgets(schedule)
+        self._create_widgets(parent, schedule)
 
-    def _create_widgets(self, schedules):
+    def _create_widgets(self, app, schedules):
         self.widgets: list[customtkinter.CTkFrame] = []
 
         for route in schedules:
-            self.widgets.append(RouteWidget(self, route))
+            self.widgets.append(RouteWidget(self, app, route))
 
         self._draw_widgets()
 

@@ -100,18 +100,33 @@ class App(customtkinter.CTk):
         try:
             create_schedule(career_id=0, airline_icao=airline_icao, origin=origin_icao, no_daily_flights=no_flights, min_flight_duration=min_flight_dur, max_flight_duration=max_flight_dur, no_days=1)
             print("Schedule successfully created.")
-            schedule: list[Schedule] = get_current_day_schedule(0)
+            schedules: list[Schedule] = get_current_day_schedule(0)
         except Exception as e:
             print(e)
             return self._schedule_fail("Something went wrong generating the schedule.")
 
-        if schedule is None:
-            return self._schedule_fail("Something went wrong generating the schedule.")
+        if schedules is None:
+            return self._schedule_fail("Something went wrong collecting the schedule.")
 
-        print(schedule)
+        self.content = ActiveDaySchedule(self, schedule=schedules)
+        self.schedule_map = ScheduleMap(self, schedules=schedules)
 
-        self.content = ActiveDaySchedule(self, schedule=schedule)
-        self.schedule_map = ScheduleMap(self, schedules=schedule)
+        self.content.grid(row=4, column=0, columnspan=2, sticky="nsew")
+        self.schedule_map.grid(row=0, column=2, rowspan=5, sticky="nsew")
+
+    def rerender_content_map(self) -> None:
+        """Used to rerender the content of the window. Typical use is when a flight in the schedule is marked as complete.
+
+        Returns:
+            error message: If cannot fetch a schedule, error window is rendered
+        """
+        schedules: list[Schedule] = get_current_day_schedule(0)
+
+        if schedules is None:
+            return self._schedule_fail("Something went wrong collecting the schedule.")
+
+        self.content = ActiveDaySchedule(self, schedule=schedules)
+        self.schedule_map = ScheduleMap(self, schedules=schedules)
 
         self.content.grid(row=4, column=0, columnspan=2, sticky="nsew")
         self.schedule_map.grid(row=0, column=2, rowspan=5, sticky="nsew")
