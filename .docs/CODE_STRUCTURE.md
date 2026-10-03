@@ -5,7 +5,7 @@ How the repo is laid out and how the pieces fit together. For the *design* (what
 ## Top-level layout
 
 ```
-run.py               # entry point for the shipped app (currently a stub)
+run.py               # entry point for the shipped app — launches ui.App
 run_admin.py          # entry point for the internal DB admin GUI
 pyproject.toml        # deps, managed via uv
 alembic.ini            # alembic config (points at migrations/)
@@ -14,7 +14,9 @@ models/                # SQLAlchemy ORM models — the shared data layer
 migrations/             # Alembic migration scripts (schema history)
 data/                  # the SQLite DB itself, seed data, and seed/build scripts
 scheduling/             # gameplay logic that queries the data layer (route/schedule generation)
-ui/                    # the shipped app's GUI (CustomTkinter) — not started beyond a stub
+utils/                 # small cross-cutting helpers (timezone lookup, form-input validation)
+ui/                    # the shipped app's GUI (CustomTkinter) — first working slice: schedule generator + map
+src/                   # static assets bundled into the shipped app (e.g. aircraft icon PNG)
 .devtools/db_admin/     # internal-only Tkinter GUI for browsing/editing seed data
 .docs/                 # this documentation
 ```
@@ -23,7 +25,10 @@ Everything reads/writes the single SQLite file at `data/fs_career.db` through th
 
 ## `models/` — data layer
 
-Plain SQLAlchemy `DeclarativeBase` models, one file per table: `airport.py`, `airline.py`, `aircraft_family.py`, `aircraft.py`, `route.py`. `models/__init__.py` re-exports all of them plus `Base`.
+Plain SQLAlchemy `DeclarativeBase` models, one file per table: `airport.py`, `airline.py`, `aircraft_family.py`, `aircraft.py`, `route.py`, `career.py`, `schedule.py`. `models/__init__.py` re-exports all of them plus `Base`.
+
+- `career.py` (`careers` table) — a player's save: `name`, `profile_picture_path`, `base_icao` (FK → `airports`), `rank`, `current_airline_icao` (FK → `airlines`), `bank_balance`, `current_day` (the career's current position in its own `schedules` timeline). Multiple careers are already representable at the DB/model level; the "switch between profiles" UI from the roadmap isn't built yet — the shipped app currently hardcodes `career_id=0`.
+- `schedule.py` (`schedules` table) — one row per flight *instance* in a career's generated schedule (as opposed to `routes`, which is the reusable real-world route catalog): `career_id` (FK → `careers`), `day_no`, `flight_index` (unique together), `route_id` (FK → `routes`), `departure_time_utc`, and `status` (`"completed" | "current" | "future"`, DB-checked against `STATUS_OPTIONS`). This is what makes generated schedules persistent and resumable across app restarts rather than regenerated/discarded each run.
 
 `models/base.py` owns the engine/session machinery:
 - `REPO_ROOT`, `DB_PATH` — resolves `data/fs_career.db` relative to the repo root regardless of cwd.
@@ -55,17 +60,36 @@ Where game logic that operates on the data layer lives, as opposed to raw data a
 
 - `random_route.py` — `get_random_route(airline_icao, origin, max_duration, min_duration)`: picks a random `Route` for an airline from a given origin within a duration band.
 - `route_between_points.py` — `get_route_between_points(airline_icao, origin, destination)`: looks up the specific route connecting two airports for an airline (used to find the return/connecting leg after picking a random outbound one).
-- `create_schedule.py` — `create_day_schedule(airline_icao, origin, no_flights, min_flight_duration, max_flight_duration)`: builds a multi-leg pilot schedule, branching on `Airline.network_model`:
+- `generate_schedule.py` — `create_day_schedule(airline_icao, origin, no_flights, min_flight_duration, max_flight_duration)`: builds a single day's multi-leg pilot schedule (a plain `list[Route]`, not yet persisted), branching on `Airline.network_model`:
   - `hub_and_spoke` (`create_hub_and_spoke_schedule`) — alternates a random outbound leg from `origin` with the known return leg back to `origin`, bounded by a 600-minute (10-hour) duty-time cap. An odd `no_flights` is allowed to end away from base (a layover) rather than forcing an even number of legs.
   - `point_to_point` (`create_point_to_point_schedule`) — chains random legs from wherever the previous leg landed, then retries (up to 10 times) to find a route back to `origin` for the final leg; if that fails, or the whole schedule exceeds the duty-time cap, it recurses with one fewer `attempts_remaining` and restarts from scratch. Not graph-pathfinding — a real shortest-path/reachability solve is a possible future improvement (see comment in the file) but the retry approach has been sufficient so far.
   - `no_flights == 1` short-circuits to a single `get_random_route` call regardless of network model.
   - Two known gaps flagged by `TODO`s in the file: no type-rating constraint yet (routes can be generated for any aircraft), and no logic to redirect an out-of-position schedule back to the player's actual base once career mode exists.
+- `create_schedule.py` — `create_schedule(career_id, airline_icao, origin, no_daily_flights, min_flight_duration, max_flight_duration, no_days, min_layover_duration, max_layover_duration)`: the persistence layer on top of `generate_schedule`. Calls `create_day_schedule` once per day (chaining each day's origin to the previous day's final destination), assigns each flight a randomized departure time (rounded to 5 minutes) with a randomized layover gap between legs, and writes the result as `Schedule` rows. Refuses to generate a new schedule if the career's existing schedule (up to `Career.current_day`) isn't fully completed yet, returning a specific error string rather than raising. Only the very first flight of the very first day is marked `"current"`; everything else starts `"future"`.
+- `get_current_day_schedule.py` — `get_current_day_schedule(career_id)`: loads a career's `Schedule` rows (eager-loading `Route`/`Airport` via `joinedload`) for whatever `Career.current_day` currently is, ordered by `flight_index`. This is what the UI renders.
+- `mark_complete.py` — `mark_flight_complete(schedule)`: marks a `Schedule` row `"completed"`, promotes the next `flight_index` in the same day to `"current"`; if there is no next flight that day, increments `Career.current_day` and promotes `flight_index == 0` of the next day instead (or leaves nothing current if that day doesn't exist yet). This is the stand-in for real flight-completion detection — a `TODO` in `ui/route_widget.py` notes it should be replaced once SimConnect-based flight tracking exists.
+- `delete_schedules_in_day_range.py` — `delete_schedules_in_day_range(start_day, end_day, career_id)`: bulk-deletes `Schedule` rows in a day range for a career; a cleanup helper, not yet wired into any UI flow.
 
-All three modules are re-exported from `scheduling/__init__.py`.
+All modules are re-exported from `scheduling/__init__.py`.
+
+## `utils/` — small cross-cutting helpers
+
+- `timezones.py` — `get_airport_timezone(airport_icao) -> ZoneInfo`: looks up `Airport.timezone` and returns it as a `zoneinfo.ZoneInfo`, used to convert UTC schedule times to each airport's local time for display.
+- `validation.py` — `check_airline_icao_exists`/`check_airport_icao_exists`: simple existence checks used to validate the schedule-generator form's text-entry fields before calling into `scheduling`.
 
 ## `ui/` — shipped app GUI
 
-CustomTkinter-based GUI for the actual player-facing app. Currently just an import stub in `__init__.py` — not started. When built, expect it to follow the same GUI/business-logic split as `.devtools/db_admin` (screens own layout, a separate module owns queries) rather than mixing DB calls into widget code.
+CustomTkinter-based GUI for the actual player-facing app, launched by `run.py`. First working slice: a single-window schedule generator, hardcoded to `career_id=0` (no profile create/switch UI yet — that's still roadmap item 4). Not yet following the `.devtools/db_admin` screens/repo split (widget modules currently call into `scheduling`/`models` directly); expect that layering to get introduced as the UI grows past this first slice.
+
+- `app.py` (`App(customtkinter.CTk)`) — the main window. Owns a form (airline/origin/flight-count/duration entries + "Generate Schedule" button) that validates input via `utils.validation` and calls `scheduling.create_schedule`, plus the two read-only views below. `rerender_content_map()` re-fetches the current day's schedule and rebuilds both views — called after generating a schedule and after a flight is marked complete.
+- `active_day_schedule.py` (`ActiveDaySchedule(CTkScrollableFrame)`) — renders the current day's `Schedule` rows as a stacked list of `RouteWidget` cards.
+- `route_widget.py` (`RouteWidget(CTkFrame)` + `RouteContent`) — one flight card: departure/arrival ICAO, local + UTC times (via `utils.timezones`), duration, aircraft icon, callsign. If the card's `Schedule.status == "current"`, left-click opens a SimBrief OFP prefill link (airline ICAO, flight number, aircraft type, origin/dest, departure time) built from the route+schedule data, and right-click calls `scheduling.mark_flight_complete` then `app.rerender_content_map()` — this is the current (temporary) stand-in for "the player actually flew it." Note the SimBrief link uses the airline's **ICAO** code, not IATA (deliberate switch — see git history "Switched SimBrief airline code to ICAO instead of IATA").
+- `map_widget.py` (`ScheduleMap(tkintermapview.TkinterMapView)`) — plots the current day's schedule as markers + path lines on a map (tile source: ArcGIS World Street Map), color-coded by `Schedule.status` via `ui.theme.Colours`, auto-fitted to a bounding box covering all legs.
+- `theme.py` — shared `Colours`/`Fonts` constants (route-card side colors per status, card fonts) so widget modules don't hardcode styling inline.
+
+## `src/` — static assets
+
+Non-code assets bundled with the shipped app, referenced by relative path from `ui/` widgets — currently just `aircraft_icon.png` (the plane icon on each route card).
 
 ## `.devtools/db_admin/` — internal DB admin GUI
 

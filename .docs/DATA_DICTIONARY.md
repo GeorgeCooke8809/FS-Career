@@ -1,6 +1,6 @@
 # Data Dictionary — Airlines & Routes
 
-Covers the core reference tables: `airports`, `airlines`, `aircraft_families`, `aircraft`, `routes`. Models live in `models/`.
+Covers the core reference tables (`airports`, `airlines`, `aircraft_families`, `aircraft`, `routes`) plus the gameplay tables built on top of them (`careers`, `schedules`). Models live in `models/`.
 
 ## `airports`
 
@@ -70,6 +70,39 @@ The fact table — each row is one specific scheduled service: an airline flying
 - `CHECK(duration_minutes > 0)`
 - `CHECK(origin_icao != destination_icao)`
 
+## `careers`
+
+A player's save/profile. Multiple careers are supported at the model level; the app currently only ever runs against a single hardcoded `career_id=0` (no profile create/switch UI yet).
+
+| Column                  | Type      | Nullable | Key                   | Description                                                      |
+| ------------------------ | --------- | -------- | ----------------------- | ------------------------------------------------------------------ |
+| `id`                     | Integer   | No       | PK (surrogate)          | Autoincrement.                                                    |
+| `name`                   | String    | No       |                         | Career/profile display name.                                      |
+| `profile_picture_path`   | String    | No       |                         | Path to the profile's picture.                                    |
+| `base_icao`              | String(4) | No       | FK → `airports.icao`    | The career's home base airport. `ON UPDATE CASCADE`.              |
+| `rank`                   | Integer   | No       | Default `0`             | Seniority/rank within the current airline.                         |
+| `current_airline_icao`   | String(3) | No       | FK → `airlines.icao`    | Airline the career is currently flying for. `ON UPDATE CASCADE`.   |
+| `bank_balance`           | Integer   | No       | Default `0`             | Personal finances balance.                                         |
+| `current_day`            | Integer   | No       | Default `0`             | The career's current position (`day_no`) within its own `schedules` timeline — advances as flights are completed. |
+
+## `schedules`
+
+One row per flight *instance* in a career's generated schedule — distinct from `routes`, which is the reusable real-world route catalog a schedule draws from. This is what makes a generated schedule persistent and resumable across app restarts rather than regenerated/discarded each run.
+
+| Column               | Type      | Nullable | Key                                              | Description                                                        |
+| --------------------- | --------- | -------- | --------------------------------------------------- | ---------------------------------------------------------------------- |
+| `id`                 | Integer   | No       | PK (surrogate)                                      | Autoincrement.                                                      |
+| `career_id`          | Integer   | No       | FK → `careers.id`                                   | The career this flight belongs to. `ON UPDATE CASCADE`.             |
+| `day_no`             | Integer   | No       | Unique with `career_id`, `flight_index`             | Day number within the career's schedule.                            |
+| `flight_index`       | Integer   | No       | Unique with `career_id`, `day_no`                   | Position of this flight within its day (0-based).                   |
+| `route_id`           | Integer   | No       | FK → `routes.id`                                    | The real-world route this flight instance operates. `ON UPDATE CASCADE`. |
+| `departure_time_utc` | Time      | No       |                                                      | Randomized scheduled departure time (UTC), rounded to the nearest 5 minutes. |
+| `status`             | String    | No       | Check: `completed`/`current`/`future`               | Lifecycle state — exactly one flight per career is normally `current` at a time. |
+
+**Constraints:**
+- `UNIQUE(career_id, day_no, flight_index)`
+- `CHECK(status IN ('completed', 'current', 'future'))`
+
 ## Relationships
 
 - `Airline.routes` ↔ `Route.airline` — one airline to many routes.
@@ -77,6 +110,10 @@ The fact table — each row is one specific scheduled service: an airline flying
 - `AircraftFamily.aircraft` ↔ `Aircraft.family` — one family to many variants.
 - `Airport.departures` ↔ `Route.origin` — one airport to many routes departing from it.
 - `Airport.arrivals` ↔ `Route.destination` — one airport to many routes arriving at it.
+- `Career.base` ↔ `Airport` — a career's home base.
+- `Career.current_airline` ↔ `Airline` — a career's current employer.
+- `Career.schedules` ↔ `Schedule.career` — one career to many scheduled flight instances.
+- `Route.schedules` ↔ `Schedule.route` — one route to many scheduled instances of it across careers/days.
 
 ## Design notes
 

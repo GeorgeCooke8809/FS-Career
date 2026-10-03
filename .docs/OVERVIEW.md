@@ -45,6 +45,35 @@ Score inputs:
 
 This score is the primary "rating" driving hiring eligibility and career narrative — there is deliberately no separate abstract pilot-skill rating.
 
+## Flight Tracking Metrics (SimConnect)
+
+In-flight monitoring is split into two tracks, reflecting who would actually notice each thing in real life: metrics an **airline's own flight-data-monitoring program** tracks (operational/safety exceedances, invisible to passengers) versus things a **passenger (or crew member, for one item) would personally feel and could complain about**. The split keeps the Customer Satisfaction score's complaint mechanic grounded in what a passenger could plausibly notice, while still letting the Reprimand System (below) key off operational exceedances a passenger would never perceive.
+
+**Airline-tracked** (operational exceedances; feed the Reprimand System and/or a separate ops-focused metric, not passenger complaints):
+
+- **Time performance** — actual vs. scheduled block times.
+- **G-limits** — exceeding the airframe's G envelope.
+- **Stable landing / stabilized approach** — speed/altitude/configuration/descent-rate gates continuing to touchdown, not just the landing itself.
+- **Overspeed metrics** — Vmo/Mmo overspeed, flap/gear speed limit (VFE/VLE) exceedance, and 250kt below FL100.
+- **Fuel at landing** — landed below minimum reserve.
+- **Cruise altitude deviation** — level bust off cleared altitude.
+- **Max pitch on takeoff** — tailstrike risk on rotation (and worth extending to the landing flare for the same risk on the other end).
+
+Route conformance and weather-hazard avoidance were considered but are deferred — SimConnect has no clean way to check planned-route conformance or hazard avoidance without a lot of extra infrastructure (ATC/weather-cell data), so they're "if feasible later" rather than committed.
+
+**Passenger-tracked** (things a passenger/crew member would feel; each out-of-bounds event has a random chance — rising as satisfaction falls — of generating a complaint that dings the satisfaction score):
+
+- **Excessive vertical speed** — abrupt climb/descent, felt as pressurization discomfort, distinct from a full G-exceedance.
+- **Hard braking** — deceleration spike on landing rollout/taxi, separate from the touchdown itself.
+- **Delay** — lateness as the passenger experienced it (distinct from the airline's own OTP metric above — intentionally double-tracked, since the two serve different purposes).
+- **Landing rate** — hard touchdown, felt directly by passengers.
+- **Seatbelt sign discipline** — e.g. sign off when it should be on for a phase, or turbulence encountered with the sign off.
+- **Surface type** — aircraft leaves paved surface while taxiing, reported by **crew** rather than passengers (a feel/sound thing noticed from the flight deck/cabin, not something passengers would attribute correctly themselves).
+
+**Known feasibility limit — taxiway/centerline conformance**: SimConnect's facility-data API exposes **runway** geometry (threshold lat/lon, heading, length, width), so a real runway-excursion check (lateral/longitudinal offset from the runway corridor) is buildable. It does **not** expose taxiway centerlines or polygons at all — that geometry only exists in the scenery BGL, unreachable via SimConnect. The `SURFACE_TYPE` simvar (paved vs. grass/dirt/etc.) is the only available proxy, and it only catches the aircraft leaving pavement entirely — it can't detect drifting toward a taxiway's edge while still on pavement. This is why "surface type" above is scoped narrowly rather than a general "taxiway incursion" metric.
+
+**Dependency**: nearly every metric above needs **flight-phase detection** to gate correctly (pitch limit only during takeoff/landing roll, altitude deviation only at cruise, seatbelt checks care about phase, surface-type only while taxiing). This makes phase detection (already roadmap item 9) a hard prerequisite for this whole list, not one checkbox among several.
+
 ## Reprimand System (Career mode)
 
 Triggers only on things a passenger, crew member, or the aircraft would realistically report:
